@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --ink: #0B0B0C;
+    --concrete: #EDEEE9;
+    --hazard: #FFD400;
+    --circuit: #1E3FFF;
+    --signal: #FF3B30;
+    --rebar: #8A8A82;
+    
+    --bg-primary: #EDEEE9;
+    --text-primary: #0B0B0C;
+    --card-bg: #FFFFFF;
+    --border-color: #0B0B0C;
+  }
+
+  .dark {
+    --bg-primary: #0B0B0C;
+    --text-primary: #EDEEE9;
+    --card-bg: #141518;
+    --border-color: #EDEEE9;
+  }
+}
+
+@theme {
+  --color-ink: #0B0B0C;
+  --color-concrete: #EDEEE9;
+  --color-hazard: #FFD400;
+  --color-circuit: #1E3FFF;
+  --color-signal: #FF3B30;
+  --color-rebar: #8A8A82;
+  
+  --font-display: var(--font-bricolage), sans-serif;
+  --font-sans: var(--font-inter), sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
+}
+
+/* Base Body Styles */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom Utilities for Hard Shadows and Brutalist Elements */
+.shadow-hard {
+  box-shadow: 6px 6px 0px #0B0B0C;
+}
+
+.dark .shadow-hard {
+  box-shadow: 6px 6px 0px #EDEEE9;
+}
+
+.shadow-hard-sm {
+  box-shadow: 3px 3px 0px #0B0B0C;
+}
+
+.dark .shadow-hard-sm {
+  box-shadow: 3px 3px 0px #EDEEE9;
+}
+
+.shadow-hard-lg {
+  box-shadow: 10px 10px 0px #0B0B0C;
+}
+
+.dark .shadow-hard-lg {
+  box-shadow: 10px 10px 0px #EDEEE9;
+}
+
+.shadow-hard-circuit {
+  box-shadow: 6px 6px 0px #1E3FFF;
+}
+
+.shadow-hard-hazard {
+  box-shadow: 6px 6px 0px #FFD400;
+}
+
+/* Hazard Stripe Pattern */
+.bg-hazard-stripes {
+  background-image: repeating-linear-gradient(
+    45deg,
+    #FFD400,
+    #FFD400 16px,
+    #0B0B0C 16px,
+    #0B0B0C 32px
+  );
+}
+
+.bg-hazard-stripes-sm {
+  background-image: repeating-linear-gradient(
+    45deg,
+    #FFD400,
+    #FFD400 8px,
+    #0B0B0C 8px,
+    #0B0B0C 16px
+  );
+}
+
+/* Grid background pattern */
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(138, 138, 130, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(138, 138, 130, 0.18) 1px, transparent 1px);
+}
+
+/* Stencil text effect */
+.font-stencil {
+  font-family: var(--font-jetbrains), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+  border-left: 3px solid var(--border-color);
+}
+::-webkit-scrollbar-thumb {
+  background: #FFD400;
+  border: 3px solid #0B0B0C;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1E3FFF;
+}
