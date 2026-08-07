@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon, Send } from "lucide-react";
+import LogoMark from "./LogoMark";
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -73,13 +74,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
         <div className="flex items-center justify-between gap-3">
           
-          {/* Logo JKB */}
-          <a
-            href="#hero"
-            className="flex items-center justify-center px-3 py-1.5 bg-neo-yellow text-neo-black font-display font-black text-xl tracking-tight border-3 border-neo-black shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all rounded-lg"
-          >
-            <span>JKB</span>
-          </a>
+          {/* Custom Brand Logo */}
+          <LogoMark />
 
           {/* Checkpoint Nav Links - Desktop */}
           <nav className="hidden md:flex items-center gap-1 font-display font-bold text-sm">
