@@ -1,131 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
-    --ink: #0B0B0C;
-    --concrete: #EDEEE9;
-    --hazard: #FFD400;
-    --circuit: #1E3FFF;
-    --signal: #FF3B30;
-    --rebar: #8A8A82;
-    
-    --bg-primary: #EDEEE9;
-    --text-primary: #0B0B0C;
-    --card-bg: #FFFFFF;
-    --border-color: #0B0B0C;
+    --primary: #66d9ef;   /* cyan */
+    --secondary: #ffd93d; /* yellow */
+    --accent: #a8e6cf;    /* mint green */
+    --pink: #ff6b9d;      /* pink */
+    --purple: #c7ceea;    /* purple */
+    --border: #000000;
+    --bg: #ffffff;
+    --card: #ffffff;
+    --text: #000000;
   }
 
   .dark {
-    --bg-primary: #0B0B0C;
-    --text-primary: #EDEEE9;
-    --card-bg: #141518;
-    --border-color: #EDEEE9;
+    --bg: #1a1a1a;
+    --card: #2a2a2a;
+    --text: #ffffff;
+    --border: #a8e6cf;
   }
 }
 
 @theme {
-  --color-ink: #0B0B0C;
-  --color-concrete: #EDEEE9;
-  --color-hazard: #FFD400;
-  --color-circuit: #1E3FFF;
-  --color-signal: #FF3B30;
-  --color-rebar: #8A8A82;
+  --color-neo-cyan: #66d9ef;
+  --color-neo-yellow: #ffd93d;
+  --color-neo-mint: #a8e6cf;
+  --color-neo-pink: #ff6b9d;
+  --color-neo-purple: #c7ceea;
+  --color-neo-black: #000000;
   
-  --font-display: var(--font-bricolage), sans-serif;
-  --font-sans: var(--font-inter), sans-serif;
-  --font-mono: var(--font-jetbrains), monospace;
+  --font-sans: 'Space Grotesk', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-handwriting: 'Caveat', cursive;
 }
 
-/* Base Body Styles */
+/* Single Unified Graph Paper Grid Background on Body */
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-inter), sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
   overflow-x: hidden;
   transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-/* Custom Utilities for Hard Shadows and Brutalist Elements */
-.shadow-hard {
-  box-shadow: 6px 6px 0px #0B0B0C;
-}
-
-.dark .shadow-hard {
-  box-shadow: 6px 6px 0px #EDEEE9;
-}
-
-.shadow-hard-sm {
-  box-shadow: 3px 3px 0px #0B0B0C;
-}
-
-.dark .shadow-hard-sm {
-  box-shadow: 3px 3px 0px #EDEEE9;
-}
-
-.shadow-hard-lg {
-  box-shadow: 10px 10px 0px #0B0B0C;
-}
-
-.dark .shadow-hard-lg {
-  box-shadow: 10px 10px 0px #EDEEE9;
-}
-
-.shadow-hard-circuit {
-  box-shadow: 6px 6px 0px #1E3FFF;
-}
-
-.shadow-hard-hazard {
-  box-shadow: 6px 6px 0px #FFD400;
-}
-
-/* Hazard Stripe Pattern */
-.bg-hazard-stripes {
-  background-image: repeating-linear-gradient(
-    45deg,
-    #FFD400,
-    #FFD400 16px,
-    #0B0B0C 16px,
-    #0B0B0C 32px
-  );
-}
-
-.bg-hazard-stripes-sm {
-  background-image: repeating-linear-gradient(
-    45deg,
-    #FFD400,
-    #FFD400 8px,
-    #0B0B0C 8px,
-    #0B0B0C 16px
-  );
-}
-
-/* Grid background pattern */
-.bg-grid-pattern {
-  background-size: 32px 32px;
+  background-size: 24px 24px;
   background-image: 
-    linear-gradient(to right, rgba(138, 138, 130, 0.18) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(138, 138, 130, 0.18) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
 }
 
-/* Stencil text effect */
-.font-stencil {
-  font-family: var(--font-jetbrains), monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
+.dark body {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Loader Screen Styles */
+.loader-letter {
+  font-size: 5rem;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  border: 6px solid #000;
+  box-shadow: 10px 10px 0 #000;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: letterPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  opacity: 0;
+  transform: scale(0) rotate(-180deg);
+  border-radius: 16px;
+}
+
+.loader-letter-1 {
+  background: #66d9ef;
+  color: #000;
+  animation-delay: 0.1s;
+}
+
+.loader-letter-2 {
+  background: #ff6b9d;
+  color: #000;
+  animation-delay: 0.2s;
+}
+
+.loader-progress-fill {
+  width: 0%;
+  animation: progressFill 0.8s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes letterPop {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes progressFill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes floatDeco {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(10deg);
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50% { transform: translateY(-10px) rotate(-2deg); }
+}
+
+@keyframes bounceGentle {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50% { transform: translateY(-8px) rotate(-8deg); }
+}
+
+@keyframes popOut {
+  0%, 100% { transform: translateY(0) rotate(12deg); }
+  50% { transform: translateY(-6px) rotate(8deg); }
+}
+
+.hero-terminal-falling {
+  animation: fallBounce 1.4s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
+}
+
+@keyframes fallBounce {
+  0% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  60% {
+    transform: translateY(var(--fall-distance, 300px)) rotate(15deg);
+  }
+  75% {
+    transform: translateY(calc(var(--fall-distance, 300px) - 30px)) rotate(5deg);
+  }
+  85% {
+    transform: translateY(calc(var(--fall-distance, 300px) - 5px)) rotate(12deg);
+  }
+  92% {
+    transform: translateY(calc(var(--fall-distance, 300px) - 15px)) rotate(8deg);
+  }
+  100% {
+    transform: translateY(calc(var(--fall-distance, 300px) - 10px)) rotate(10deg);
+  }
+}
+
+/* Neo Brutalist Hard Offset Shadows */
+.shadow-neo {
+  box-shadow: 4px 4px 0px var(--border);
+}
+
+.shadow-neo-sm {
+  box-shadow: 2.5px 2.5px 0px var(--border);
+}
+
+.shadow-neo-lg {
+  box-shadow: 6px 6px 0px var(--border);
+}
+
+.shadow-neo-cyan {
+  box-shadow: 4px 4px 0px #66d9ef;
+}
+
+.shadow-neo-yellow {
+  box-shadow: 4px 4px 0px #ffd93d;
+}
+
+.shadow-neo-pink {
+  box-shadow: 4px 4px 0px #ff6b9d;
+}
+
+.shadow-neo-mint {
+  box-shadow: 4px 4px 0px #a8e6cf;
+}
+
+/* Interactive Neo Hover Lift */
+.btn-neo {
+  transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-neo:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--border);
+}
+
+.btn-neo:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px var(--border);
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-  border-left: 3px solid var(--border-color);
+  background: var(--bg);
+  border-left: 2px solid var(--border);
 }
 ::-webkit-scrollbar-thumb {
-  background: #FFD400;
-  border: 3px solid #0B0B0C;
+  background: #ffd93d;
+  border: 2px solid #000000;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #1E3FFF;
+  background: #66d9ef;
 }

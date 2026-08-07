@@ -1,127 +1,120 @@
 "use client";
 
 import React, { useState } from "react";
-import { PORTFOLIO_DATA } from "@/content/data";
-import { Mail, Send, ExternalLink, Key, Copy, Check } from "lucide-react";
+import { PORTFOLIO_DATA } from "@/content/portfolioData";
+import { Mail, Send, Check, Copy, MapPin } from "lucide-react";
+import { GitHubIcon, LinkedInIcon } from "@/components/icons/SocialIcons";
 
 export default function ContactSection() {
-  const [copiedKey, setCopiedKey] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const handleCopyPGP = () => {
-    navigator.clipboard.writeText(PORTFOLIO_DATA.contact.pgpFingerprint);
-    setCopiedKey(true);
-    setTimeout(() => setCopiedKey(false), 2000);
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(PORTFOLIO_DATA.profile.email);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <section id="contact" className="py-12 space-y-8">
       
       {/* Section Header */}
-      <div className="flex items-center gap-3 border-b-4 border-ink dark:border-concrete pb-4">
-        <div className="p-2 bg-hazard text-ink border-2 border-ink shadow-hard-sm">
+      <div className="flex items-center gap-3 border-b-3 border-neo-black dark:border-neo-mint pb-4">
+        <div className="p-2 bg-neo-yellow text-neo-black border-2 border-neo-black shadow-neo-sm rounded-lg">
           <Mail className="w-6 h-6 stroke-[2.5]" />
         </div>
         <div>
-          <span className="font-mono text-xs text-rebar uppercase tracking-widest">// SECTION 07</span>
-          <h2 className="font-display font-black text-3xl sm:text-4xl uppercase text-ink dark:text-concrete">
-            DISPATCH & CONTACT
+          <h2 className="font-display font-black text-3xl sm:text-4xl uppercase text-neo-black dark:text-white">
+            GET IN TOUCH
           </h2>
         </div>
       </div>
 
-      {/* Main Contact Crate */}
-      <div className="bg-card-bg border-4 border-ink dark:border-concrete shadow-hard-lg p-6 sm:p-8 space-y-8">
+      {/* Main Contact Card */}
+      <div className="bg-white dark:bg-[#2a2a2a] border-3 border-neo-black dark:border-white shadow-neo-lg rounded-xl p-6 sm:p-8 space-y-8">
         
-        <div className="max-w-2xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-hazard text-ink font-mono text-xs font-bold border-2 border-ink shadow-hard-sm">
-            <Send className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>DIRECT CHANNEL OPEN</span>
+        <div className="max-w-2xl space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-neo-yellow text-neo-black font-mono text-xs font-bold border-2 border-neo-black rounded-md shadow-neo-sm">
+            <Send className="w-4 h-4" />
+            <span>LET&apos;S BUILD SOMETHING AMAZING TOGETHER</span>
           </div>
 
-          <h3 className="font-display font-black text-3xl sm:text-4xl uppercase text-ink dark:text-concrete leading-tight">
-            NO CORPORATE FORMS. <br />
-            JUST DIRECT DISPATCH.
+          <h3 className="font-display font-black text-3xl sm:text-4xl uppercase text-neo-black dark:text-white leading-tight">
+            SAY HELLO OR START A CONVERSATION
           </h3>
 
-          <p className="text-base font-sans text-ink/80 dark:text-concrete/80 leading-relaxed">
-            Have a project, role, system advisory, or engineering inquiry? Reach out directly via mail or find my work across the dev network.
+          <p className="text-base font-sans font-medium text-neo-black/85 dark:text-gray-200 leading-relaxed">
+            Have a web/mobile app project, Spring Boot microservices question, IoT cybersecurity advisory, or just want to connect? Drop an email or connect on LinkedIn and GitHub.
           </p>
         </div>
 
-        {/* Direct Stamped Mail Button */}
-        <div>
+        {/* Action Bar: Email & Copy */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
           <a
-            href={`mailto:${PORTFOLIO_DATA.contact.email}`}
-            className="inline-flex flex-col sm:flex-row sm:items-center gap-4 px-6 py-5 bg-hazard text-ink font-mono font-extrabold border-4 border-ink shadow-hard hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-hard-sm transition-all group cursor-pointer"
+            href={`https://mail.google.com/mail/?view=cm&fs=1&to=${PORTFOLIO_DATA.profile.email}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-3 px-6 py-4 bg-neo-yellow text-neo-black font-display font-extrabold text-lg sm:text-xl border-3 border-neo-black shadow-neo hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-lg transition-all rounded-xl cursor-pointer"
           >
-            <div className="p-3 bg-ink text-hazard border-2 border-ink group-hover:bg-circuit group-hover:text-white transition-colors">
-              <Mail className="w-8 h-8 stroke-[2.5]" />
-            </div>
-            <div>
-              <div className="text-xs uppercase text-ink/70">DISPATCH DIRECT EMAIL:</div>
-              <div className="text-xl sm:text-2xl font-black tracking-tight underline decoration-3 underline-offset-4">
-                {PORTFOLIO_DATA.contact.email}
-              </div>
-            </div>
+            <Mail className="w-6 h-6 stroke-[2.5]" />
+            <span>{PORTFOLIO_DATA.profile.email}</span>
           </a>
+
+          <button
+            onClick={handleCopyEmail}
+            className="flex items-center justify-center gap-2 px-4 py-4 bg-neo-cyan text-neo-black font-mono text-sm font-bold border-3 border-neo-black shadow-neo hover:bg-neo-mint transition-all rounded-xl cursor-pointer"
+          >
+            {copied ? (
+              <>
+                <Check className="w-5 h-5 stroke-[3]" />
+                <span>COPIED!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-5 h-5" />
+                <span>COPY EMAIL</span>
+              </>
+            )}
+          </button>
         </div>
 
-        {/* Social Reticle Grid */}
-        <div className="space-y-4 pt-4 border-t-3 border-ink/10 dark:border-concrete/10">
-          <span className="font-mono text-xs font-bold text-rebar uppercase">
-            // SOCIAL & CODE NETWORK:
+        {/* Social Cards Grid */}
+        <div className="space-y-3 pt-4 border-t-2 border-neo-black/10 dark:border-white/10">
+          <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
+            NETWORK & SOCIAL CHANNELS:
           </span>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {PORTFOLIO_DATA.contact.socials.map((soc, idx) => (
-              <a
-                key={idx}
-                href={soc.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-3.5 bg-concrete dark:bg-ink border-3 border-ink dark:border-concrete shadow-hard-sm hover:bg-circuit hover:text-white transition-all font-mono group"
-              >
-                <div>
-                  <div className="font-extrabold text-xs">{soc.name}</div>
-                  <div className="text-[11px] text-rebar group-hover:text-white/80">
-                    {soc.handle}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { label: "LinkedIn", handle: "jeswin-karunya-benedict", url: PORTFOLIO_DATA.profile.linkedin, icon: LinkedInIcon, color: "bg-neo-cyan" },
+              { label: "GitHub", handle: "@jeswinbenedict", url: PORTFOLIO_DATA.profile.github, icon: GitHubIcon, color: "bg-neo-yellow" },
+            ].map((soc, idx) => {
+              const IconComp = soc.icon;
+              return (
+                <a
+                  key={idx}
+                  href={soc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 bg-gray-50 dark:bg-black border-2 border-neo-black dark:border-white shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all rounded-xl font-mono group"
+                >
+                  <div>
+                    <div className="font-extrabold text-sm text-neo-black dark:text-white">{soc.label}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-sans">{soc.handle}</div>
                   </div>
-                </div>
-                <ExternalLink className="w-4 h-4 stroke-[2]" />
-              </a>
-            ))}
+                  <IconComp className="w-5 h-5 text-neo-black dark:text-white group-hover:text-blue-600 transition-colors" />
+                </a>
+              );
+            })}
           </div>
         </div>
 
-        {/* PGP Key Fingerprint */}
-        <div className="p-4 bg-concrete dark:bg-black/50 border-3 border-ink dark:border-concrete space-y-2 font-mono text-xs">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 font-bold text-ink dark:text-concrete">
-              <Key className="w-4 h-4 text-circuit stroke-[2.5]" />
-              <span>PGP_FINGERPRINT // PUBLIC KEY</span>
-            </div>
-
-            <button
-              onClick={handleCopyPGP}
-              className="flex items-center gap-1 px-2 py-1 bg-hazard text-ink border border-ink text-[10px] font-bold shadow-hard-sm hover:bg-circuit hover:text-white transition-colors cursor-pointer"
-            >
-              {copiedKey ? (
-                <>
-                  <Check className="w-3 h-3 stroke-[3]" />
-                  <span>COPIED</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3 h-3" />
-                  <span>COPY KEY</span>
-                </>
-              )}
-            </button>
+        {/* Location Badge */}
+        <div className="p-4 bg-neo-mint/30 border-2 border-neo-black dark:border-white rounded-xl flex items-center justify-between font-mono text-xs text-neo-black dark:text-gray-200">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-red-600" />
+            <span className="font-bold">LOCATION: CHENNAI, TAMIL NADU, INDIA</span>
           </div>
-
-          <div className="p-2.5 bg-white dark:bg-ink border border-ink/20 dark:border-concrete/20 text-rebar text-[11px] select-all break-all">
-            {PORTFOLIO_DATA.contact.pgpFingerprint}
-          </div>
+          <span className="hidden sm:inline">STUDENT AT VIT-AP UNIVERSITY (AMARAVATI, AP)</span>
         </div>
 
       </div>
