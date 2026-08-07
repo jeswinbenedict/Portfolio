@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
+import avatarImg from "@/public/jeswin-avatar.jpg";
 import { PORTFOLIO_DATA } from "@/content/portfolioData";
 import { Mail } from "lucide-react";
 import {
@@ -249,7 +250,7 @@ export default function HeroSection() {
               }}
             >
               <Image
-                src="/jeswin-avatar.jpg"
+                src={avatarImg}
                 alt="Jeswin Karunya Benedict - Full Stack Developer"
                 fill
                 sizes="(max-width: 768px) 100vw, 380px"
