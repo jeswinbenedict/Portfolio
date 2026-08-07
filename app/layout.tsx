@@ -3,7 +3,6 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Loader from "@/components/Loader";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://github.com/jeswinbenedict"),
@@ -67,7 +66,6 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning className="min-h-screen flex flex-col font-sans bg-white dark:bg-[#1a1a1a] text-neo-black dark:text-white selection:bg-neo-yellow selection:text-neo-black">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <Loader />
           <Navbar />
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
             {children}
