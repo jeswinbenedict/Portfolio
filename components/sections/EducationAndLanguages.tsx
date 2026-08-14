@@ -80,6 +80,11 @@ export default function EducationAndLanguagesSection() {
             <h3 className="font-display font-black text-xl uppercase text-neo-black dark:text-white">
               {PORTFOLIO_DATA.education.degree}
             </h3>
+            {PORTFOLIO_DATA.education.subtitle && (
+              <p className="font-sans text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mt-1">
+                {PORTFOLIO_DATA.education.subtitle}
+              </p>
+            )}
             <p className="font-mono text-sm font-bold text-blue-600 dark:text-neo-yellow mt-1">
               {PORTFOLIO_DATA.education.institution}
             </p>

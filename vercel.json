@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/Portfolio/api/analytics/digest",
+      "schedule": "30 15 * * *"
+    }
+  ]
+}

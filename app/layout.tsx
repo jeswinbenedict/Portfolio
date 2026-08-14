@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AnalyticsProvider from "@/components/AnalyticsProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://github.com/jeswinbenedict"),
@@ -71,6 +72,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <AnalyticsProvider />
         </ThemeProvider>
       </body>
     </html>

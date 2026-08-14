@@ -92,7 +92,7 @@ SPECIALTIES: Java, Spring Boot, React, TypeScript, Python, REST APIs, Docker, Ku
 [CORE DOMAINS]          Web & Mobile App Development, IoT Cybersecurity, Distributed Systems, Routing Protocols`,
 
     journey: `=== ACADEMIC & ORGANIZATIONAL JOURNEY ===
-• VIT-AP University | Degree in Computer Science & Engineering
+• VIT-AP University | Integrated M.Tech CSE (in Collaboration with Virtusa)
 • Semmozhi Tamil Mandram | Cultural Club — Core Member & Coordinator
 • Full-Stack & IoT Research | Web, Mobile, IoT Cybersecurity & WSN Routing Protocols`,
 
@@ -117,7 +117,7 @@ LinkedIn: linkedin.com/in/jeswin-karunya-benedict`,
       country: "India",
       flag: "IN",
       coords: [16.5062, 80.648],
-      description: "Pursuing studies in Computer Science & Engineering. Developed web & mobile apps, research pipelines in hybrid ML/DL IoT cybersecurity, and distributed WSN routing protocols.",
+      description: "Pursuing Integrated M.Tech CSE (in Collaboration with Virtusa). Developed web & mobile apps, research pipelines in hybrid ML/DL IoT cybersecurity, and distributed WSN routing protocols.",
       technologies: ["Java", "Spring Boot", "React", "TypeScript", "Python", "REST APIs", "Android XML"],
       highlights: [
         "Built full-stack web and native mobile applications with Spring Boot backend & React/Android frontend",
@@ -216,7 +216,8 @@ LinkedIn: linkedin.com/in/jeswin-karunya-benedict`,
   ] as Project[],
 
   education: {
-    degree: "Bachelor of Technology in Computer Science & Engineering",
+    degree: "Integrated M.Tech CSE (Virtusa)",
+    subtitle: "Five year integrated programme CSE in Collaboration with Virtusa",
     institution: "VIT-AP University",
     period: "Higher Education",
     location: "Amaravati, Andhra Pradesh",
