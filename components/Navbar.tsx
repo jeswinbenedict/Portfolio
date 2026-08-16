@@ -14,7 +14,8 @@ export default function Navbar() {
   const lastScrollY = useRef(0);
 
   useEffect(() => {
-    setMounted(true);
+    // Defer setting mounted flag to avoid cascading synchronous render in effect
+    const raf = requestAnimationFrame(() => setMounted(true));
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -45,7 +46,10 @@ export default function Navbar() {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const checkpoints = [

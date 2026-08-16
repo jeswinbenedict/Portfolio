@@ -23,11 +23,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Next.js static export
+      - name: Build Next.js
         run: npm run build
 
-      - name: Create .nojekyll
-        run: touch ./out/.nojekyll
+      - name: Prepare static output directory
+        run: |
+          mkdir -p ./out
+          touch ./out/.nojekyll
+          if [ -d "./public" ]; then
+            cp -rn ./public/* ./out/ 2>/dev/null || true
+          fi
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4

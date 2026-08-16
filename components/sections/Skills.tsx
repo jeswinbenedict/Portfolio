@@ -1,6 +1,6 @@
 import React from "react";
 import { PORTFOLIO_DATA } from "@/content/portfolioData";
-import { Layers, Check, Sparkles, Star } from "lucide-react";
+import { Layers, Check, Star } from "lucide-react";
 
 export default function SkillsSection() {
   return (
