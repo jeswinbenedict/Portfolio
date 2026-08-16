@@ -68,30 +68,32 @@ export default function EducationAndLanguagesSection() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#2a2a2a] border-3 border-neo-black dark:border-white shadow-neo-lg rounded-xl p-6 space-y-3">
+        <div className="bg-white dark:bg-[#2a2a2a] border-3 border-neo-black dark:border-white shadow-neo-lg rounded-xl p-6 space-y-4">
           <div className="flex items-center justify-between border-b-2 border-neo-black/10 dark:border-white/10 pb-2 font-mono text-xs font-bold text-gray-500 dark:text-gray-300">
-            <span>{PORTFOLIO_DATA.education.period}</span>
-            <span className="px-2 py-0.5 bg-neo-mint text-neo-black border border-neo-black rounded">
-              DEGREE VERIFIED
+            <span className="px-2.5 py-0.5 bg-neo-yellow text-neo-black border border-neo-black rounded-md font-bold">
+              {PORTFOLIO_DATA.education.period}
+            </span>
+            <span className="px-2.5 py-0.5 bg-neo-mint text-neo-black border border-neo-black rounded-md font-bold">
+              DEGREE PROGRAMME
             </span>
           </div>
 
-          <div>
-            <h3 className="font-display font-black text-xl uppercase text-neo-black dark:text-white">
+          <div className="space-y-1.5">
+            <h3 className="font-display font-black text-xl sm:text-2xl uppercase tracking-tight text-neo-black dark:text-white">
               {PORTFOLIO_DATA.education.degree}
             </h3>
             {PORTFOLIO_DATA.education.subtitle && (
-              <p className="font-sans text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mt-1">
+              <p className="font-sans text-sm sm:text-base font-semibold text-neo-black/85 dark:text-gray-200">
                 {PORTFOLIO_DATA.education.subtitle}
               </p>
             )}
-            <p className="font-mono text-sm font-bold text-blue-600 dark:text-neo-yellow mt-1">
+            <p className="font-mono text-sm font-bold text-blue-600 dark:text-neo-yellow">
               {PORTFOLIO_DATA.education.institution}
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 font-mono text-xs text-gray-600 dark:text-gray-300 pt-1">
-            <MapPin className="w-4 h-4 text-red-600" />
+          <div className="flex items-center gap-1.5 font-mono text-xs text-gray-600 dark:text-gray-300 pt-2 border-t border-neo-black/10 dark:border-white/10">
+            <MapPin className="w-4 h-4 text-red-600 shrink-0" />
             <span>{PORTFOLIO_DATA.education.location}</span>
           </div>
         </div>
