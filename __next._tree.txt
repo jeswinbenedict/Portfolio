@@ -1,2 +1,0 @@
-:HL["/Portfolio/_next/static/css/4acb221168aaa0c2.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":4176,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}},"staleTime":300,"buildId":"ezl2ElEzKL-IJ_2PNLL5Y"}
