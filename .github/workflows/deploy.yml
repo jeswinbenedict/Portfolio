@@ -28,8 +28,27 @@ jobs:
 
       - name: Prepare static output directory
         run: |
-          mkdir -p ./out
+          mkdir -p ./out/_next/static
           touch ./out/.nojekyll
+
+          # Copy prerendered HTML and static assets from .next build
+          if [ -d "./.next/server/app" ]; then
+            cp -r ./.next/server/app/*.html ./out/ 2>/dev/null || true
+            cp -r ./.next/server/app/*.ico ./out/ 2>/dev/null || true
+            cp -r ./.next/server/app/*.svg ./out/ 2>/dev/null || true
+            cp -r ./.next/server/app/*.txt ./out/ 2>/dev/null || true
+          fi
+
+          if [ -d "./.next/static" ]; then
+            cp -r ./.next/static/* ./out/_next/static/ 2>/dev/null || true
+          fi
+
+          # Ensure 404 fallback exists for GitHub Pages client routing
+          if [ -f "./out/_not-found.html" ] && [ ! -f "./out/404.html" ]; then
+            cp ./out/_not-found.html ./out/404.html
+          fi
+
+          # Copy public static media
           if [ -d "./public" ]; then
             cp -rn ./public/* ./out/ 2>/dev/null || true
           fi
