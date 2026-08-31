@@ -38,8 +38,7 @@ export function initTracker(): () => void {
   let sessionEndSent = false;
 
   // ── Resolve the API endpoint ────────────────────────────
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-  const trackUrl = `${basePath}/api/analytics/track`;
+  const trackUrl = "/api/analytics/track";
 
   // ── 1. Send initial pageview (delayed 2s to skip bots) ──
   const pageviewTimer = window.setTimeout(() => {

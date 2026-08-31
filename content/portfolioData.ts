@@ -55,7 +55,6 @@ export const PORTFOLIO_DATA = {
     paypalCoffeeUrl: "https://github.com/jeswinbenedict",
     github: "https://github.com/jeswinbenedict",
     linkedin: "https://www.linkedin.com/in/jeswin-karunya-benedict",
-    stackoverflow: "https://github.com/jeswinbenedict",
   },
 
   heroTechBadges: [

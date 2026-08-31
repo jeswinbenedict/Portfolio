@@ -18,9 +18,10 @@ import {
   siKotlin,
 } from "simple-icons";
 
+const MATRIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+
 function MatrixText({ text, delay = 500 }: { text: string; delay?: number }) {
   const [displayText, setDisplayText] = useState(text);
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
 
   useEffect(() => {
     let iterations = 0;
@@ -34,7 +35,7 @@ function MatrixText({ text, delay = 500 }: { text: string; delay?: number }) {
             .map((char, index) => {
               if (index < iterations) return text[index];
               if (char === " ") return char;
-              return chars[Math.floor(Math.random() * chars.length)];
+              return MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
             })
             .join("")
         );
@@ -50,7 +51,7 @@ function MatrixText({ text, delay = 500 }: { text: string; delay?: number }) {
       clearTimeout(timer);
       if (intervalId) clearInterval(intervalId);
     };
-  }, [text, delay, chars]);
+  }, [text, delay]);
 
   return <>{displayText}</>;
 }
@@ -62,6 +63,7 @@ export default function HeroSection() {
   const [photoTilted, setPhotoTilted] = useState(false);
   const [terminalFallen, setTerminalFallen] = useState(false);
   const [fallDistance, setFallDistance] = useState(0);
+  const triggeredRef = useRef(false);
 
   const calculateFallDistance = useCallback(() => {
     if (!heroContentRef.current || !terminalRef.current) return;
@@ -76,18 +78,19 @@ export default function HeroSection() {
     window.addEventListener("resize", calculateFallDistance);
 
     const handleScroll = () => {
-      if (window.scrollY > 5) {
-        if (!photoTilted) setPhotoTilted(true);
-        if (!terminalFallen) setTerminalFallen(true);
+      if (window.scrollY > 5 && !triggeredRef.current) {
+        triggeredRef.current = true;
+        setPhotoTilted(true);
+        setTerminalFallen(true);
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("resize", calculateFallDistance);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [photoTilted, terminalFallen, calculateFallDistance]);
+  }, [calculateFallDistance]);
 
   return (
     <section id="hero" className="pt-12 pb-8 md:pt-20 md:pb-12 space-y-12">

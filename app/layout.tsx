@@ -6,7 +6,11 @@ import Footer from "@/components/Footer";
 import AnalyticsProvider from "@/components/AnalyticsProvider";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://github.com/jeswinbenedict"),
+  metadataBase: new URL("https://jeswinbenedict.vercel.app"),
+  robots: {
+    index: true,
+    follow: true,
+  },
   title: "Jeswin Karunya Benedict - Portfolio | Full Stack Developer & Mobile App Builder",
   description:
     "Jeswin Karunya Benedict - Full Stack Developer | Web & Mobile App Builder | Building applications to solve real-world problems. Based in Chennai, Tamil Nadu. Student at VIT-AP University, Amaravati, Andhra Pradesh.",
