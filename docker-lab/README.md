@@ -495,11 +495,25 @@ port 3000 -> 200    port 3100 -> 200
 | `screenshots/docker-build.png` | `docker build` output ending in a successful image export. |
 | `screenshots/docker-images.png` | `docker images` listing the v1, v2 and Docker Hub-tagged images. |
 | `screenshots/docker-ps.png` | `docker ps` showing the running container and the `0.0.0.0:3000->3000/tcp` port mapping. |
-| `screenshots/dockerhub.png` | The `jechuimmanuel/portfolio` repository on Docker Hub after the push. |
+| `screenshots/dockerhub.png` | *Not included.* The push is evidenced instead by `logs/dockerhub-push.log` and the digests in §8 — see the note below. |
 | `screenshots/vm-deploy.png` | The VM pulling `jechuimmanuel/portfolio:v2` from Docker Hub and running it. |
 | `screenshots/browser-vm.png` | The application served **by the VM**, showing the `v2 · Dockerized` badge. |
 
 Raw command output is also preserved as text in `logs/` for reference.
+
+> **Note on `dockerhub.png`.** A capture of the Docker Hub web page is not included. The
+> push itself is complete and independently verifiable three ways: the push transcript in
+> `logs/dockerhub-push.log`, the per-tag registry digests recorded in §8, and a round-trip
+> test in which the local image was deleted and re-pulled from the registry. Anyone can
+> confirm the images are public by running:
+>
+> ```bash
+> docker pull jechuimmanuel/portfolio:v2
+> ```
+>
+> The `browser-vm.png` screenshot is itself downstream proof: the VM had no source code and
+> an empty Docker engine, so the application it serves could only have come from the
+> registry.
 
 ---
 
@@ -521,7 +535,7 @@ Raw command output is also preserved as text in `logs/` for reference.
 | Q3 | Accessed from the host browser | Done — `http://localhost:3200` (`screenshots/browser-vm.png`) |
 | Q3 | Accessed by the VM's IP + port | Partial — 200 from inside the VM; blocked from the Windows host by the Hyper-V firewall (§11) |
 | Q3 | v2 confirmed on the VM | Done — badge present in the VM-served HTML |
-| — | `screenshots/dockerhub.png` | **Pending** — capture the repository page in a browser |
+| — | `screenshots/dockerhub.png` | Not included — push evidenced by `logs/dockerhub-push.log`, §8 digests and a re-pull test (§13) |
 | — | Badge reverted on `main` (post-capture) | Done — commit `26ce4b2`; see the note below |
 
 ### Note on the repository after the lab
