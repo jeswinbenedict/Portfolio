@@ -196,7 +196,36 @@ Tag and push:
 docker tag jeswin-portfolio:v2 jechuimmanuel/portfolio:v2
 docker login -u jechuimmanuel
 docker push jechuimmanuel/portfolio:v2
+docker push jechuimmanuel/portfolio:latest
 ```
+
+### Push result — all three tags are live
+
+| Tag | Registry digest | OS/ARCH | Compressed size |
+|---|---|---|---|
+| `v2` | `595e69fc8d0e` | linux/amd64 | 60.62 MB |
+| `latest` | `595e69fc8d0e` | linux/amd64 | 60.62 MB |
+| `v1` | `6259f2f38c78` | linux/amd64 | 60.62 MB |
+
+`v2` and `latest` share a digest because both names point at the same image.
+
+The registry reports **60.62 MB** while `docker images` reports **265 MB**: the registry
+figure is the *compressed* size of the layers as transferred, the local figure is the
+*uncompressed* size on disk. Both describe the same image.
+
+Verified by deleting the local copy and pulling it back from the registry:
+
+```
+$ docker rmi jechuimmanuel/portfolio:v2
+$ docker pull jechuimmanuel/portfolio:v2
+Digest: sha256:a9a6c16a7882772d346cbdbf0d076dd13fd2d3d7da9196ad5c8f05edf8f3df42
+Status: Downloaded newer image for jechuimmanuel/portfolio:v2
+```
+
+> The digest shown on the Docker Hub tags page (`595e69fc8d0e`) is the per-platform
+> manifest digest, whereas `a9a6c16a7882` is the digest of the multi-platform index that
+> `docker images` displays locally. They refer to the same image from different levels of
+> the manifest.
 
 ---
 
@@ -379,8 +408,9 @@ Raw command output is also preserved as text in `logs/` for reference.
 | Q2 | Old container stopped & removed | Done |
 | Q2 | New `v2` container running & verified | Done — badge present in served HTML |
 | Q3 | Image tagged for Docker Hub | Done — `jechuimmanuel/portfolio:v2` |
-| Q3 | Image pushed to Docker Hub | **Pending** — requires `docker login` (credentials entered by the student) |
+| Q3 | Image pushed to Docker Hub | Done — `v1`, `v2` and `latest` live; verified by re-pull (§8) |
 | Q3 | Pulled & run on VM | **Pending** — requires the local VM to be running; commands in §11 |
+| — | `screenshots/dockerhub.png` | **Pending** — capture the repository page in a browser |
 | — | Badge reverted on `main` (post-capture) | Done — commit `26ce4b2`; see the note below |
 
 ### Note on the repository after the lab
