@@ -238,12 +238,9 @@ matching the site's existing border/shadow design language.
 and dark themes, which makes the v1 → v2 difference unambiguous in a screenshot. It is
 hidden below the `sm` breakpoint (`hidden sm:inline-flex`) so the mobile navbar does not wrap.
 
-> **Note on the repository state.** The badge is a lab marker, not a feature of the live
-> portfolio, so it was reverted on `main` after the `v2` image had been built and captured.
-> The `v2` image (`a9a6c16a7882`) and the copy of the application in `source-code/` both
-> still contain it — that is the code the image was built from. To rebuild an identical
-> `v2` image from the repository, re-apply the snippet above to `components/Navbar.tsx`,
-> or build from `source-code/` instead.
+> **Note.** This badge was reverted on the `main` branch after the `v2` image was built and
+> captured, so that a lab marker does not appear on the deployed portfolio. The image and the
+> `source-code/` copy in this submission both still contain it — see §14 for details.
 
 **Verification that v2 is actually being served** (not a cached v1):
 
@@ -384,6 +381,32 @@ Raw command output is also preserved as text in `logs/` for reference.
 | Q3 | Image tagged for Docker Hub | Done — `jechuimmanuel/portfolio:v2` |
 | Q3 | Image pushed to Docker Hub | **Pending** — requires `docker login` (credentials entered by the student) |
 | Q3 | Pulled & run on VM | **Pending** — requires the local VM to be running; commands in §11 |
+| — | Badge reverted on `main` (post-capture) | Done — commit `26ce4b2`; see the note below |
+
+### Note on the repository after the lab
+
+The `v2 · Dockerized` badge is a lab marker rather than a feature of the live portfolio,
+so it was removed from the `main` branch **after** the `v2` image was built and all
+screenshots were captured. Nothing in this report is affected by that:
+
+| Artefact | Contains the badge? | Why |
+|---|---|---|
+| `v2` image `a9a6c16a7882` | Yes | A built image is immutable — later edits to the source cannot change it. |
+| `source-code/` in this submission | Yes | This is the exact code the `v2` image was built from. |
+| `screenshots/browser-v2.png` | Yes | Captured from the running `v2` container. |
+| `components/Navbar.tsx` on `main` | No | Reverted so the badge does not appear on the deployed site. |
+
+**Consequence for rebuilding:** running `docker build` against the current `main` branch
+would produce an image *without* the badge. To reproduce an image identical to `v2`, either
+build from the `source-code/` directory in this submission, or re-apply the JSX snippet in
+§10 to `components/Navbar.tsx` first.
+
+Git history for the lab:
+
+```
+26ce4b2  revert(ui): drop the v2 Dockerized badge from the navbar
+b2d8946  feat(docker): containerize portfolio and add v2 release badge
+```
 
 ---
 
