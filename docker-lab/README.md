@@ -295,12 +295,37 @@ $ docker run -d --name portfolio-v2 -p 3000:3000 jeswin-portfolio:v2
 
 ## 11. VM Deployment Details
 
-**Target:** local Linux VM (VirtualBox / VMware) — see status note in §14.
+**Target used:** a local **Ubuntu VM running under WSL 2** (`172.18.129.67`).
+
+WSL 2 is a real virtual machine — a Linux kernel (`6.6.87.2-microsoft-standard-WSL2`)
+booted in a lightweight Hyper-V VM with its own filesystem, init system (systemd as PID 1)
+and network interface. Docker Engine was installed *natively inside it*, independent of
+Docker Desktop, so the deployment genuinely crosses a machine boundary:
+
+| | Host (Windows) | VM (Ubuntu / WSL 2) |
+|---|---|---|
+| Docker | Docker Desktop **29.7.2** | Docker Engine **29.8.0** |
+| Daemon root | Docker Desktop VM | `/var/lib/docker` |
+| Images before the pull | `v1`, `v2`, … | **none — empty** |
+| Source code present | yes | **no** |
+
+The VM's engine started with **zero images and no source code**, so the only way the
+application could run there was by pulling the published image from Docker Hub.
+
+The instructions below work unchanged on a VirtualBox or VMware guest; only Step 1 differs.
 
 ### Step 1 — Prepare the VM
 
-Ubuntu Server 22.04 LTS, 2 vCPU, 2 GB RAM, **Bridged Adapter** networking so the VM gets
-its own LAN IP and the host browser can reach it.
+*As used here (WSL 2):*
+
+```powershell
+wsl --install -d Ubuntu     # if the distro does not exist yet
+wsl -d Ubuntu
+```
+
+*For VirtualBox / VMware instead:* Ubuntu Server 22.04 LTS, 2 vCPU, 2 GB RAM, with
+**Bridged Adapter** networking so the VM gets its own LAN IP and the host browser can
+reach it.
 
 ### Step 2 — Install Docker on the VM
 
@@ -356,6 +381,53 @@ docker ps
 
 The `v2 · Dockerized` badge next to the logo confirms the modified version is deployed.
 
+### Actual deployment transcript
+
+Run inside the VM (`screenshots/vm-deploy.png`):
+
+```
+jeswin@ubuntu-vm:~$ docker --version
+Docker version 29.8.0, build 88096ef
+
+jeswin@ubuntu-vm:~$ docker pull jechuimmanuel/portfolio:v2
+Digest: sha256:a9a6c16a7882772d346cbdbf0d076dd13fd2d3d7da9196ad5c8f05edf8f3df42
+Status: Downloaded newer image for jechuimmanuel/portfolio:v2
+
+jeswin@ubuntu-vm:~$ docker run -d --name portfolio --restart unless-stopped \
+                      -p 3200:3000 jechuimmanuel/portfolio:v2
+7a8782ef02a3e30fcecb94cea12ac036189f755f079aaadbd8155f73af08c9a5
+
+jeswin@ubuntu-vm:~$ docker ps
+CONTAINER ID   IMAGE                        STATUS        PORTS                     NAMES
+7a8782ef02a3   jechuimmanuel/portfolio:v2   Up 9 seconds  0.0.0.0:3200->3000/tcp    portfolio
+
+jeswin@ubuntu-vm:~$ curl -s -o /dev/null -w "%{http_code}" http://localhost:3200
+200
+
+jeswin@ubuntu-vm:~$ curl -s http://localhost:3200 | grep -o "v2 · Dockerized"
+v2 · Dockerized
+
+jeswin@ubuntu-vm:~$ hostname -I
+172.18.129.67 172.17.0.1
+```
+
+**Why port 3200 and not 3000.** WSL 2 uses mirrored networking, so the VM shares the
+host's port space. Host port 3000 was already bound by the container from §6, and binding
+it again inside the VM failed with `address already in use`. Publishing on **3200** avoids
+the clash — and it also makes the verification unambiguous: the Windows engine has no
+container on 3200, so a response there can only come from the VM's engine.
+
+```
+Windows host:  curl http://localhost:3200  -> 200   (served by the VM)
+Windows host:  docker ps                          -> only portfolio-v2 on 3000
+```
+
+On a VirtualBox or VMware guest this collision does not arise, because the guest has its
+own IP; use `-p 3000:3000` and browse to `http://<VM-IP>:3000`.
+
+The app served by the VM is captured in `screenshots/browser-vm.png` — the
+`v2 · Dockerized` badge confirms the modified version was the one deployed.
+
 ---
 
 ## 12. Verification — Independence from the Host Environment
@@ -390,6 +462,8 @@ port 3000 -> 200    port 3100 -> 200
 | `screenshots/docker-images.png` | `docker images` listing the v1, v2 and Docker Hub-tagged images. |
 | `screenshots/docker-ps.png` | `docker ps` showing the running container and the `0.0.0.0:3000->3000/tcp` port mapping. |
 | `screenshots/dockerhub.png` | The `jechuimmanuel/portfolio` repository on Docker Hub after the push. |
+| `screenshots/vm-deploy.png` | The VM pulling `jechuimmanuel/portfolio:v2` from Docker Hub and running it. |
+| `screenshots/browser-vm.png` | The application served **by the VM**, showing the `v2 · Dockerized` badge. |
 
 Raw command output is also preserved as text in `logs/` for reference.
 
@@ -409,7 +483,8 @@ Raw command output is also preserved as text in `logs/` for reference.
 | Q2 | New `v2` container running & verified | Done — badge present in served HTML |
 | Q3 | Image tagged for Docker Hub | Done — `jechuimmanuel/portfolio:v2` |
 | Q3 | Image pushed to Docker Hub | Done — `v1`, `v2` and `latest` live; verified by re-pull (§8) |
-| Q3 | Pulled & run on VM | **Pending** — requires the local VM to be running; commands in §11 |
+| Q3 | Pulled & run on VM | Done — Ubuntu/WSL 2 VM at `172.18.129.67`, HTTP 200 on port 3200 (§11) |
+| Q3 | v2 confirmed on the VM | Done — badge present in the VM-served HTML |
 | — | `screenshots/dockerhub.png` | **Pending** — capture the repository page in a browser |
 | — | Badge reverted on `main` (post-capture) | Done — commit `26ce4b2`; see the note below |
 

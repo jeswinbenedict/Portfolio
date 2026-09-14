@@ -1,0 +1,13 @@
+$ docker pull jechuimmanuel/portfolio:v2
+e96828f7c954: Pull complete
+2d9960267332: Pull complete
+49e7d5be8c37: Pull complete
+e5da2afb0269: Pull complete
+6f28bd5abfad: Pull complete
+Digest: sha256:a9a6c16a7882772d346cbdbf0d076dd13fd2d3d7da9196ad5c8f05edf8f3df42
+Status: Downloaded newer image for jechuimmanuel/portfolio:v2
+docker.io/jechuimmanuel/portfolio:v2
+
+$ docker images
+IMAGE                        ID             DISK USAGE   CONTENT SIZE   EXTRA
+jechuimmanuel/portfolio:v2   a9a6c16a7882        265MB         63.6MB        

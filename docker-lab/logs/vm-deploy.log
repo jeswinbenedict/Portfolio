@@ -1,0 +1,24 @@
+$ docker --version
+Docker version 29.8.0, build 88096ef
+
+$ docker pull jechuimmanuel/portfolio:v2
+Digest: sha256:a9a6c16a7882772d346cbdbf0d076dd13fd2d3d7da9196ad5c8f05edf8f3df42
+Status: Image is up to date for jechuimmanuel/portfolio:v2
+docker.io/jechuimmanuel/portfolio:v2
+
+$ docker images
+IMAGE                        ID             DISK USAGE   CONTENT SIZE   EXTRA
+jechuimmanuel/portfolio:v2   a9a6c16a7882        265MB         63.6MB   U    
+
+$ docker ps
+CONTAINER ID   IMAGE                        STATUS         PORTS                                         NAMES
+7a8782ef02a3   jechuimmanuel/portfolio:v2   Up 9 seconds   0.0.0.0:3200->3000/tcp, [::]:3200->3000/tcp   portfolio
+
+$ curl -s -o /dev/null -w "%{http_code}" http://localhost:3200
+200
+
+$ curl -s http://localhost:3200 | grep -o "v2 . Dockerized"
+v2 · Dockerized
+
+$ hostname -I
+172.18.129.67 172.17.0.1 
