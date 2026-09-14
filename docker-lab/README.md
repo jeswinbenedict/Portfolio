@@ -231,11 +231,13 @@ Status: Downloaded newer image for jechuimmanuel/portfolio:v2
 
 ## 9. Application URL
 
-| Environment | URL |
-|---|---|
-| Local container (host machine) | http://localhost:3000 |
-| Container, second instance | http://localhost:3100 |
-| Local VM (bridged networking) | `http://<VM-IP>:3000` |
+| Environment | URL | Verified |
+|---|---|---|
+| Local container (host machine) | http://localhost:3000 | 200 |
+| Container, second instance | http://localhost:3100 | 200 |
+| VM container, from the Windows host | http://localhost:3200 | 200 |
+| VM container, by the VM's own IP, from inside the VM | http://172.18.129.67:3200 | 200 |
+| VM container, by the VM's IP, from the Windows host | `http://172.18.129.67:3200` | blocked — see §11 |
 
 ---
 
@@ -425,6 +427,38 @@ Windows host:  docker ps                          -> only portfolio-v2 on 3000
 On a VirtualBox or VMware guest this collision does not arise, because the guest has its
 own IP; use `-p 3000:3000` and browse to `http://<VM-IP>:3000`.
 
+### Accessing the VM by its IP address — limitation on WSL 2
+
+The lab asks for access via *the VM's IP address and port*. On this WSL 2 setup that
+works **inside** the VM but is blocked **from the Windows host**:
+
+```
+inside the VM  -> http://172.18.129.67:3200   200   (container binds 0.0.0.0:3200)
+Windows host   -> http://172.18.129.67:3200   failed to connect
+Windows host   -> http://localhost:3200       200
+```
+
+The container is listening correctly on all interfaces — `ss -ltn` inside the VM shows
+`docker-proxy` on `0.0.0.0:3200`, and ICMP to `172.18.129.67` succeeds from Windows. What
+blocks it is the **Hyper-V firewall** that Windows 11 places on the WSL virtual switch
+(`vEthernet (WSL (Hyper-V firewall))`, gateway `172.18.128.1`), which denies inbound TCP
+to the VM by default. The supported route from Windows is WSL 2's localhost forwarding,
+`http://localhost:3200`, which is what the browser screenshot uses.
+
+To allow IP-based access instead, add a Hyper-V firewall rule from an **elevated**
+PowerShell (this changes a Windows security setting, so run it deliberately):
+
+```powershell
+New-NetFirewallHyperVRule -Name "WSL-portfolio-3200" `
+  -DisplayName "WSL portfolio 3200" -Direction Inbound `
+  -VMCreatorId "{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}" `
+  -Protocol TCP -LocalPorts 3200 -Action Allow
+```
+
+On a VirtualBox or VMware guest with a **Bridged Adapter** this restriction does not
+apply: the guest holds its own LAN IP and `http://<VM-IP>:3000` is reachable from the host
+browser with no firewall change. That is the topology the lab assumes.
+
 The app served by the VM is captured in `screenshots/browser-vm.png` — the
 `v2 · Dockerized` badge confirms the modified version was the one deployed.
 
@@ -484,6 +518,8 @@ Raw command output is also preserved as text in `logs/` for reference.
 | Q3 | Image tagged for Docker Hub | Done — `jechuimmanuel/portfolio:v2` |
 | Q3 | Image pushed to Docker Hub | Done — `v1`, `v2` and `latest` live; verified by re-pull (§8) |
 | Q3 | Pulled & run on VM | Done — Ubuntu/WSL 2 VM at `172.18.129.67`, HTTP 200 on port 3200 (§11) |
+| Q3 | Accessed from the host browser | Done — `http://localhost:3200` (`screenshots/browser-vm.png`) |
+| Q3 | Accessed by the VM's IP + port | Partial — 200 from inside the VM; blocked from the Windows host by the Hyper-V firewall (§11) |
 | Q3 | v2 confirmed on the VM | Done — badge present in the VM-served HTML |
 | — | `screenshots/dockerhub.png` | **Pending** — capture the repository page in a browser |
 | — | Badge reverted on `main` (post-capture) | Done — commit `26ce4b2`; see the note below |
