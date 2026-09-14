@@ -59,6 +59,14 @@ jobs:
             cp -rn ./public/* ./out/ 2>/dev/null || true
           fi
 
+          # Vercel watches every branch in this repo, including gh-pages.
+          # That branch holds built output and has no `app/` directory, so
+          # Vercel's `next build` fails there with:
+          #   "Couldn't find any `pages` or `app` directory"
+          # An ignoreCommand that exits 0 tells Vercel to skip the build for
+          # this branch. Production deploys from `main` are unaffected.
+          printf '{ "ignoreCommand": "exit 0" }\n' > ./out/vercel.json
+
       # 1. Direct deployment to gh-pages branch (covers 'Deploy from a branch' setting)
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
