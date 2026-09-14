@@ -78,8 +78,17 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
         <div className="flex items-center justify-between gap-3">
           
-          {/* Custom Brand Logo */}
-          <LogoMark />
+          {/* Custom Brand Logo + Release Badge */}
+          <div className="flex items-center gap-2">
+            <LogoMark />
+            {/* Version badge — introduced in the Dockerized v2 release */}
+            <span
+              title="Running the v2 container image"
+              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 bg-neo-mint text-neo-black font-mono font-extrabold text-[11px] leading-none border-2 border-neo-black shadow-neo-sm rounded-lg whitespace-nowrap"
+            >
+              v2 · Dockerized
+            </span>
+          </div>
 
           {/* Checkpoint Nav Links - Desktop */}
           <nav className="hidden md:flex items-center gap-1 font-display font-bold text-sm">

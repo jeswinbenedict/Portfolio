@@ -1,0 +1,6 @@
+HOST  node : v25.2.1  | platform: MINGW64_NT-10.0-26200
+IMAGE node : v20.20.2 | platform: Linux
+IMAGE user : nextjs
+
+--- second instance on a different port (isolation proof) ---
+port 3000 -> 200  port 3100 -> 200

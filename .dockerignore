@@ -1,0 +1,25 @@
+# Dependencies & build output are regenerated inside the image
+node_modules
+.next
+out
+tsconfig.tsbuildinfo
+
+# VCS / CI
+.git
+.github
+.gitignore
+
+# Secrets — must never be baked into an image layer
+.env
+.env.local
+.env.*.local
+
+# Local noise
+npm-debug.log*
+*.log
+.DS_Store
+.vscode
+.idea
+
+# Lab deliverables (docs & screenshots, not app code)
+docker-lab

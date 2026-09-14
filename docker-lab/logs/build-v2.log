@@ -1,0 +1,121 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.54kB 0.0s done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 ...
+
+#3 [auth] docker/dockerfile:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 2.2s
+
+#4 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#4 resolve docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32 0.0s done
+#4 CACHED
+
+#5 [internal] load metadata for docker.io/library/node:20-alpine
+#5 ...
+
+#6 [auth] library/node:pull token for registry-1.docker.io
+#6 DONE 0.0s
+
+#5 [internal] load metadata for docker.io/library/node:20-alpine
+#5 DONE 1.3s
+
+#7 [internal] load .dockerignore
+#7 transferring context: 395B done
+#7 DONE 0.0s
+
+#8 [internal] load build context
+#8 DONE 0.0s
+
+#9 [deps 1/4] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#9 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.0s done
+#9 DONE 0.1s
+
+#8 [internal] load build context
+#8 transferring context: 7.82kB 0.0s done
+#8 DONE 0.0s
+
+#10 [deps 3/4] COPY package.json package-lock.json ./
+#10 CACHED
+
+#11 [deps 4/4] RUN npm ci
+#11 CACHED
+
+#12 [deps 2/4] WORKDIR /app
+#12 CACHED
+
+#13 [builder 3/5] COPY --from=deps /app/node_modules ./node_modules
+#13 CACHED
+
+#14 [builder 4/5] COPY . .
+#14 DONE 0.1s
+
+#15 [builder 5/5] RUN npm run build
+#15 1.047 
+#15 1.047 > portfolio@0.1.0 build
+#15 1.047 > next build --webpack
+#15 1.047 
+#15 1.814 ▲ Next.js 16.3.0 (webpack)
+#15 1.877 ✓ Running next.config.ts took 61ms
+#15 1.900 
+#15 1.953   Creating an optimized production build ...
+#15 19.74 ✓ Compiled successfully in 13.4s
+#15 19.75   Running TypeScript ...
+#15 25.76   Finished TypeScript in 6.0s ...
+#15 25.76   Collecting page data using 8 workers ...
+#15 28.36   Generating static pages using 8 workers (0/7) ...
+#15 29.37   Generating static pages using 8 workers (1/7) 
+#15 29.80   Generating static pages using 8 workers (3/7) 
+#15 29.89   Generating static pages using 8 workers (5/7) 
+#15 29.89 ✓ Generating static pages using 8 workers (7/7) in 1535ms
+#15 30.68   Finalizing page optimization ...
+#15 30.68   Collecting build traces ...
+#15 59.19 
+#15 59.19 Route (app)
+#15 59.19 ┌ ○ /
+#15 59.19 ├ ○ /_not-found
+#15 59.19 ├ ƒ /api/analytics/digest
+#15 59.19 ├ ƒ /api/analytics/track
+#15 59.19 └ ○ /icon.svg
+#15 59.19 
+#15 59.19 
+#15 59.19 ○  (Static)   prerendered as static content
+#15 59.19 ƒ  (Dynamic)  server-rendered on demand
+#15 59.19 
+#15 59.25 npm notice
+#15 59.25 npm notice New major version of npm available! 10.8.2 -> 12.0.2
+#15 59.25 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+#15 59.25 npm notice To update run: npm install -g npm@12.0.2
+#15 59.25 npm notice
+#15 DONE 59.3s
+
+#16 [runner 3/6] RUN addgroup --system --gid 1001 nodejs  && adduser  --system --uid 1001 nextjs
+#16 CACHED
+
+#17 [runner 4/6] COPY --from=builder /app/public ./public
+#17 CACHED
+
+#18 [runner 5/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#18 DONE 0.5s
+
+#19 [runner 6/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+#19 DONE 0.1s
+
+#20 exporting to image
+#20 exporting layers
+#20 exporting layers 2.7s done
+#20 exporting manifest sha256:595e69fc8d0e6eb09d020ef3975a0ca3b6633e977ab97a3fd2e02757e82f315d 0.0s done
+#20 exporting config sha256:71dc6ed71d6afb0311434b80350d643d8cb722d0b3c52606cd7591e51ceac78b 0.0s done
+#20 exporting attestation manifest sha256:02a796463bdb65dc8ac8d977727b60b6bd09bf3448a1dad5e87e5069503740f6 0.0s done
+#20 exporting manifest list sha256:a9a6c16a7882772d346cbdbf0d076dd13fd2d3d7da9196ad5c8f05edf8f3df42
+#20 exporting manifest list sha256:a9a6c16a7882772d346cbdbf0d076dd13fd2d3d7da9196ad5c8f05edf8f3df42 0.0s done
+#20 naming to docker.io/library/jeswin-portfolio:v2 done
+#20 unpacking to docker.io/library/jeswin-portfolio:v2
+#20 unpacking to docker.io/library/jeswin-portfolio:v2 0.9s done
+#20 DONE 3.8s

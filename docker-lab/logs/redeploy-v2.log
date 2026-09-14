@@ -1,0 +1,8 @@
+$ docker stop portfolio-v1
+portfolio-v1
+
+$ docker rm portfolio-v1
+portfolio-v1
+
+$ docker run -d --name portfolio-v2 -p 3000:3000 jeswin-portfolio:v2
+79000b90067a8993a30ff95cb923a59836438bd171af7478338101b2a2af08bb

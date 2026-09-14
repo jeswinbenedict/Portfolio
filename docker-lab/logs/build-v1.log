@@ -1,0 +1,204 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.54kB 0.0s done
+#1 DONE 0.1s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 ...
+
+#3 [auth] docker/dockerfile:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 5.5s
+
+#4 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#4 resolve docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32 0.0s done
+#4 DONE 0.1s
+
+#4 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 0B / 14.14MB 0.2s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 1.05MB / 14.14MB 4.8s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 2.10MB / 14.14MB 9.1s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 3.15MB / 14.14MB 12.3s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 4.19MB / 14.14MB 14.4s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 5.24MB / 14.14MB 16.5s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 6.29MB / 14.14MB 18.1s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 7.34MB / 14.14MB 19.9s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 8.39MB / 14.14MB 21.6s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 9.44MB / 14.14MB 23.1s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 10.49MB / 14.14MB 25.2s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 11.53MB / 14.14MB 26.8s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 12.58MB / 14.14MB 28.3s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 13.63MB / 14.14MB 29.5s
+#4 sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 14.14MB / 14.14MB 30.2s done
+#4 DONE 30.4s
+
+#4 docker-image://docker.io/docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+#4 extracting sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed
+#4 extracting sha256:9f624ef51ad55db0ea52d755cc777566386156106fbb4f465eecb22c67ac55ed 0.3s done
+#4 DONE 30.6s
+
+#5 [internal] load metadata for docker.io/library/node:20-alpine
+#5 ...
+
+#6 [auth] library/node:pull token for registry-1.docker.io
+#6 DONE 0.0s
+
+#5 [internal] load metadata for docker.io/library/node:20-alpine
+#5 DONE 3.8s
+
+#7 [internal] load .dockerignore
+#7 transferring context: 395B done
+#7 DONE 0.1s
+
+#8 [deps 1/4] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#8 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.0s done
+#8 ...
+
+#9 [internal] load build context
+#9 transferring context: 536.74kB 0.3s done
+#9 DONE 0.4s
+
+#8 [deps 1/4] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#8 sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096 0B / 445B 0.2s
+#8 sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 0B / 1.26MB 0.2s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 0B / 43.23MB 0.2s
+#8 sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 0B / 3.86MB 0.2s
+#8 sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096 445B / 445B 0.5s done
+#8 sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 1.05MB / 1.26MB 3.8s
+#8 sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 1.26MB / 1.26MB 4.2s done
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 0B / 43.23MB 5.3s
+#8 sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 0B / 3.86MB 5.3s
+#8 sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 1.05MB / 3.86MB 8.1s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 1.05MB / 43.23MB 10.4s
+#8 sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 1.05MB / 3.86MB 13.2s
+#8 sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 2.10MB / 3.86MB 13.4s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 3.15MB / 43.23MB 15.5s
+#8 sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 3.15MB / 3.86MB 17.1s
+#8 sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 3.86MB / 3.86MB 19.2s done
+#8 extracting sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb
+#8 extracting sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 0.2s done
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 5.24MB / 43.23MB 20.6s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 7.34MB / 43.23MB 25.7s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 10.49MB / 43.23MB 30.7s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 13.63MB / 43.23MB 35.5s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 15.73MB / 43.23MB 40.6s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 18.87MB / 43.23MB 44.7s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 20.97MB / 43.23MB 49.8s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 24.12MB / 43.23MB 54.4s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 26.21MB / 43.23MB 59.5s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 29.36MB / 43.23MB 64.3s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 31.46MB / 43.23MB 69.4s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 33.55MB / 43.23MB 74.5s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 36.70MB / 43.23MB 78.7s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 37.75MB / 43.23MB 83.8s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 39.85MB / 43.23MB 88.9s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 42.99MB / 43.23MB 93.4s
+#8 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 43.23MB / 43.23MB 93.5s done
+#8 extracting sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287
+#8 extracting sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 1.6s done
+#8 extracting sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122
+#8 extracting sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 0.1s done
+#8 extracting sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096 0.0s done
+#8 DONE 95.6s
+
+#10 [deps 2/4] WORKDIR /app
+#10 DONE 0.1s
+
+#11 [deps 3/4] COPY package.json package-lock.json ./
+#11 DONE 0.1s
+
+#12 [runner 3/6] RUN addgroup --system --gid 1001 nodejs  && adduser  --system --uid 1001 nextjs
+#12 DONE 0.5s
+
+#13 [deps 4/4] RUN npm ci
+#13 136.8 
+#13 136.8 added 385 packages, and audited 386 packages in 2m
+#13 136.8 
+#13 136.8 153 packages are looking for funding
+#13 136.8   run `npm fund` for details
+#13 136.9 
+#13 136.9 4 vulnerabilities (3 high, 1 critical)
+#13 136.9 
+#13 136.9 To address issues that do not require attention, run:
+#13 136.9   npm audit fix
+#13 136.9 
+#13 136.9 To address all issues, run:
+#13 136.9   npm audit fix --force
+#13 136.9 
+#13 136.9 Run `npm audit` for details.
+#13 136.9 npm notice
+#13 136.9 npm notice New major version of npm available! 10.8.2 -> 12.0.2
+#13 136.9 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+#13 136.9 npm notice To update run: npm install -g npm@12.0.2
+#13 136.9 npm notice
+#13 DONE 137.1s
+
+#14 [builder 3/5] COPY --from=deps /app/node_modules ./node_modules
+#14 DONE 5.0s
+
+#15 [builder 4/5] COPY . .
+#15 DONE 0.3s
+
+#16 [builder 5/5] RUN npm run build
+#16 0.914 
+#16 0.914 > portfolio@0.1.0 build
+#16 0.914 > next build --webpack
+#16 0.914 
+#16 1.708 ▲ Next.js 16.3.0 (webpack)
+#16 1.770 ✓ Running next.config.ts took 60ms
+#16 1.788 
+#16 1.845   Creating an optimized production build ...
+#16 19.86 ✓ Compiled successfully in 13.5s
+#16 19.87   Running TypeScript ...
+#16 25.75   Finished TypeScript in 5.9s ...
+#16 25.75   Collecting page data using 8 workers ...
+#16 28.38   Generating static pages using 8 workers (0/7) ...
+#16 29.31   Generating static pages using 8 workers (1/7) 
+#16 29.68   Generating static pages using 8 workers (3/7) 
+#16 29.78   Generating static pages using 8 workers (5/7) 
+#16 29.78 ✓ Generating static pages using 8 workers (7/7) in 1405ms
+#16 30.63   Finalizing page optimization ...
+#16 30.63   Collecting build traces ...
+#16 57.61 
+#16 57.62 Route (app)
+#16 57.62 ┌ ○ /
+#16 57.62 ├ ○ /_not-found
+#16 57.62 ├ ƒ /api/analytics/digest
+#16 57.62 ├ ƒ /api/analytics/track
+#16 57.62 └ ○ /icon.svg
+#16 57.62 
+#16 57.62 
+#16 57.62 ○  (Static)   prerendered as static content
+#16 57.62 ƒ  (Dynamic)  server-rendered on demand
+#16 57.62 
+#16 57.67 npm notice
+#16 57.67 npm notice New major version of npm available! 10.8.2 -> 12.0.2
+#16 57.67 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+#16 57.67 npm notice To update run: npm install -g npm@12.0.2
+#16 57.67 npm notice
+#16 DONE 58.3s
+
+#17 [runner 4/6] COPY --from=builder /app/public ./public
+#17 DONE 0.1s
+
+#18 [runner 5/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#18 DONE 0.5s
+
+#19 [runner 6/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+#19 DONE 0.2s
+
+#20 exporting to image
+#20 exporting layers
+#20 exporting layers 2.7s done
+#20 exporting manifest sha256:6259f2f38c78af670a48198fd9999a6ef8cc35d83c33fa3b5236399739b329c5 0.0s done
+#20 exporting config sha256:62f54c0bb2cadc93045a6f6777f0ba6bd470e8cbeac40809933411011bc33a0d 0.0s done
+#20 exporting attestation manifest sha256:577bcec5bafc087d839b40226c2c1b3410c45b0e493206023fb3be02a4995fbd 0.1s done
+#20 exporting manifest list sha256:67f4ff90ee33967471cbfd5b6311522fe2c24e9a2357b5ecb69bcc3da58b8d08
+#20 exporting manifest list sha256:67f4ff90ee33967471cbfd5b6311522fe2c24e9a2357b5ecb69bcc3da58b8d08 0.0s done
+#20 naming to docker.io/library/jeswin-portfolio:v1 0.0s done
+#20 unpacking to docker.io/library/jeswin-portfolio:v1
+#20 unpacking to docker.io/library/jeswin-portfolio:v1 1.0s done
+#20 DONE 4.0s
