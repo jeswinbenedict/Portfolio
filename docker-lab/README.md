@@ -238,6 +238,13 @@ matching the site's existing border/shadow design language.
 and dark themes, which makes the v1 → v2 difference unambiguous in a screenshot. It is
 hidden below the `sm` breakpoint (`hidden sm:inline-flex`) so the mobile navbar does not wrap.
 
+> **Note on the repository state.** The badge is a lab marker, not a feature of the live
+> portfolio, so it was reverted on `main` after the `v2` image had been built and captured.
+> The `v2` image (`a9a6c16a7882`) and the copy of the application in `source-code/` both
+> still contain it — that is the code the image was built from. To rebuild an identical
+> `v2` image from the repository, re-apply the snippet above to `components/Navbar.tsx`,
+> or build from `source-code/` instead.
+
 **Verification that v2 is actually being served** (not a cached v1):
 
 ```
