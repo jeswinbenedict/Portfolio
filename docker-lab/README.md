@@ -233,11 +233,16 @@ Status: Downloaded newer image for jechuimmanuel/portfolio:v2
 
 | Environment | URL | Verified |
 |---|---|---|
+| **AWS EC2 VM, by public IP, over the internet** | **http://56.228.18.13:3000** | **200** |
 | Local container (host machine) | http://localhost:3000 | 200 |
 | Container, second instance | http://localhost:3100 | 200 |
-| VM container, from the Windows host | http://localhost:3200 | 200 |
-| VM container, by the VM's own IP, from inside the VM | http://172.18.129.67:3200 | 200 |
-| VM container, by the VM's IP, from the Windows host | `http://172.18.129.67:3200` | blocked — see §11 |
+| WSL VM container, from the Windows host | http://localhost:3200 | 200 |
+| WSL VM container, by the VM's own IP, from inside the VM | http://172.18.129.67:3200 | 200 |
+| WSL VM container, by the VM's IP, from the Windows host | `http://172.18.129.67:3200` | blocked — see §11.B |
+
+The AWS URL is the one that satisfies the lab's "access using the VM's IP address and
+appropriate port" requirement: it is a public IPv4 address reached over the internet from a
+separate machine, with no tunnelling or port forwarding.
 
 ---
 
@@ -296,6 +301,90 @@ $ docker run -d --name portfolio-v2 -p 3000:3000 jeswin-portfolio:v2
 ---
 
 ## 11. VM Deployment Details
+
+The image was deployed to **two** separate VMs. **A** is an AWS EC2 cloud instance and is the
+primary result — it satisfies every part of the requirement including public-IP access.
+**B** is a local WSL 2 VM, kept because it demonstrates the same workflow on-premises.
+
+---
+
+## 11.A — Primary: AWS EC2 (cloud VM)
+
+**Instance:** `t3.micro` · 2 vCPU · 908 MB RAM · Ubuntu 26.04 LTS · **Public IPv4 `56.228.18.13`**
+
+A genuinely separate machine in an AWS data centre, with no source code, no Node.js and an
+empty Docker engine. The only way the application could run there was by pulling the
+published image from Docker Hub.
+
+### Steps performed
+
+```bash
+# 1 — connect to the instance
+ssh -i docker-lab.pem ubuntu@56.228.18.13
+
+# 2 — install Docker Engine
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker ubuntu
+sudo systemctl enable --now docker
+
+# 3 — pull the published image from Docker Hub
+sudo docker pull jechuimmanuel/portfolio:v2
+
+# 4 — run it
+sudo docker run -d --name portfolio --restart unless-stopped \
+  -p 3000:3000 jechuimmanuel/portfolio:v2
+```
+
+**Security group inbound rules** (EC2 → Security tab → Edit inbound rules):
+
+| Type | Protocol | Port | Source |
+|---|---|---|---|
+| SSH | TCP | 22 | `0.0.0.0/0` |
+| Custom TCP | TCP | 3000 | `0.0.0.0/0` |
+
+Without the port 3000 rule the container is reachable only from inside the instance —
+`docker-proxy` binds `0.0.0.0:3000` and `ufw` is inactive, so the security group is the only
+thing gating external access.
+
+### Result (`screenshots/aws-deploy.png`)
+
+```
+ubuntu@ip-56-228-18-13:~$ docker --version
+Docker version 29.8.0, build 88096ef
+
+ubuntu@ip-56-228-18-13:~$ docker pull jechuimmanuel/portfolio:v2
+Digest: sha256:a9a6c16a7882772d346cbdbf0d076dd13fd2d3d7da9196ad5c8f05edf8f3df42
+
+ubuntu@ip-56-228-18-13:~$ docker ps
+CONTAINER ID   IMAGE                        STATUS         PORTS
+8b38ba68de5a   jechuimmanuel/portfolio:v2   Up 6 minutes   0.0.0.0:3000->3000/tcp
+
+ubuntu@ip-56-228-18-13:~$ curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
+200
+```
+
+### Access by public IP, from a different machine over the internet
+
+```
+$ curl -s -o /dev/null -w "%{http_code}" http://56.228.18.13:3000
+200
+
+$ curl -s --compressed http://56.228.18.13:3000 | grep -o "v2 · Dockerized"
+v2 · Dockerized
+```
+
+The browser capture is `screenshots/browser-aws.png`. The `v2 · Dockerized` badge confirms
+the modified version is the one deployed, and the pulled digest `a9a6c16a7882` is identical
+to the image pushed in §8 — the same bytes travelled laptop → Docker Hub → AWS.
+
+> **Cost note.** `t3.micro` is free-tier eligible (750 h/month for 12 months). The instance
+> should be **terminated** after the demonstration so it neither accrues charges nor leaves
+> port 22 exposed.
+
+---
+
+## 11.B — Secondary: local WSL 2 VM
 
 **Target used:** a local **Ubuntu VM running under WSL 2** (`172.18.129.67`).
 
@@ -429,6 +518,10 @@ own IP; use `-p 3000:3000` and browse to `http://<VM-IP>:3000`.
 
 ### Accessing the VM by its IP address — limitation on WSL 2
 
+> This limitation applies to the WSL 2 target only. It is **not** a limitation of the
+> deployment: on the AWS instance in §11.A the same image is reached by public IP with no
+> firewall change at all. It is recorded here for completeness.
+
 The lab asks for access via *the VM's IP address and port*. On this WSL 2 setup that
 works **inside** the VM but is blocked **from the Windows host**:
 
@@ -496,8 +589,10 @@ port 3000 -> 200    port 3100 -> 200
 | `screenshots/docker-images.png` | `docker images` listing the v1, v2 and Docker Hub-tagged images. |
 | `screenshots/docker-ps.png` | `docker ps` showing the running container and the `0.0.0.0:3000->3000/tcp` port mapping. |
 | `screenshots/dockerhub.png` | *Not included.* The push is evidenced instead by `logs/dockerhub-push.log` and the digests in §8 — see the note below. |
-| `screenshots/vm-deploy.png` | The VM pulling `jechuimmanuel/portfolio:v2` from Docker Hub and running it. |
-| `screenshots/browser-vm.png` | The application served **by the VM**, showing the `v2 · Dockerized` badge. |
+| `screenshots/aws-deploy.png` | The **AWS EC2** instance pulling `jechuimmanuel/portfolio:v2` from Docker Hub and running it. |
+| `screenshots/browser-aws.png` | The application served **from AWS, reached over the internet at `http://56.228.18.13:3000`**, showing the `v2 · Dockerized` badge. |
+| `screenshots/vm-deploy.png` | The local WSL 2 VM pulling `jechuimmanuel/portfolio:v2` from Docker Hub and running it. |
+| `screenshots/browser-vm.png` | The application served **by the local VM**, showing the `v2 · Dockerized` badge. |
 
 Raw command output is also preserved as text in `logs/` for reference.
 
@@ -531,10 +626,9 @@ Raw command output is also preserved as text in `logs/` for reference.
 | Q2 | New `v2` container running & verified | Done — badge present in served HTML |
 | Q3 | Image tagged for Docker Hub | Done — `jechuimmanuel/portfolio:v2` |
 | Q3 | Image pushed to Docker Hub | Done — `v1`, `v2` and `latest` live; verified by re-pull (§8) |
-| Q3 | Pulled & run on VM | Done — Ubuntu/WSL 2 VM at `172.18.129.67`, HTTP 200 on port 3200 (§11) |
-| Q3 | Accessed from the host browser | Done — `http://localhost:3200` (`screenshots/browser-vm.png`) |
-| Q3 | Accessed by the VM's IP + port | Partial — 200 from inside the VM; blocked from the Windows host by the Hyper-V firewall (§11) |
-| Q3 | v2 confirmed on the VM | Done — badge present in the VM-served HTML |
+| Q3 | Pulled & run on VM | Done — **AWS EC2 `t3.micro`** (§11.A) and local WSL 2 VM (§11.B) |
+| Q3 | Accessed by the VM's IP + port | Done — `http://56.228.18.13:3000` → 200 over the internet (`screenshots/browser-aws.png`) |
+| Q3 | v2 confirmed on the VM | Done — badge present in the AWS-served HTML; pulled digest matches the pushed image |
 | — | `screenshots/dockerhub.png` | Not included — push evidenced by `logs/dockerhub-push.log`, §8 digests and a re-pull test (§13) |
 | — | Badge reverted on `main` (post-capture) | Done — commit `26ce4b2`; see the note below |
 
@@ -591,7 +685,16 @@ dependency layers and only the final layers were rebuilt. The old container was 
 and removed, and a new one created from the v2 image on the same port.
 
 **Distribution.** `docker tag` adds a Docker Hub–namespaced name (`jechuimmanuel/portfolio:v2`)
-pointing at the same image ID, and `docker push` uploads the layers to the registry. On the VM,
-`docker pull` fetches exactly those layers and `docker run` starts the identical application —
-no source code, no Node.js installation and no build step on the target machine. This
-build-once / run-anywhere property is the central benefit demonstrated by this lab.
+pointing at the same image ID, and `docker push` uploads the layers to the registry. On each
+target VM, `docker pull` fetches exactly those layers and `docker run` starts the identical
+application — no source code, no Node.js installation and no build step on the target machine.
+
+This was proven twice on machines that had never seen the project: an **AWS EC2 `t3.micro`**
+running Ubuntu 26.04 in a data centre, and a **local WSL 2 VM**. Both started with an empty
+Docker engine, and both ended up serving the identical application — the digest pulled on
+each (`a9a6c16a7882`) matches the digest pushed from the laptop, byte for byte. On AWS the
+result is reachable from any browser at `http://56.228.18.13:3000`.
+
+That is the central benefit this lab demonstrates: the image is built once, and the same
+artefact runs unchanged on a Windows laptop, a local Linux VM and a cloud server, because
+everything it depends on travels inside it.
