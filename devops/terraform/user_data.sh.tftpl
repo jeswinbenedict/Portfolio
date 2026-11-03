@@ -1,0 +1,53 @@
+#!/bin/bash
+###############################################################################
+# user_data.sh.tftpl — cloud-init bootstrap script
+#
+# AWS runs this once, as root, the first time the instance boots. The .tftpl
+# extension marks it as a Terraform template: ${docker_image} and ${app_port}
+# are substituted by templatefile() in main.tf before it is uploaded.
+#
+# Output is written to /var/log/cloud-init-output.log on the instance, which is
+# the first place to look if the app is not up after a few minutes.
+###############################################################################
+set -euxo pipefail
+# -e exit on error   -u error on undefined variable
+# -x print each command (so the log shows what ran)   -o pipefail catch failures mid-pipe
+
+echo "=== [1/4] waiting for apt locks to clear ==="
+# Ubuntu runs unattended-upgrades on first boot, which holds the dpkg lock.
+# Installing before it finishes fails, so wait it out.
+cloud-init status --wait || true
+
+echo "=== [2/4] installing Docker Engine ==="
+export DEBIAN_FRONTEND=noninteractive
+curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+sh /tmp/get-docker.sh
+
+# Let the default user run docker without sudo (takes effect on next login).
+usermod -aG docker ubuntu
+
+systemctl enable --now docker
+
+echo "=== [3/4] pulling and running the application ==="
+docker pull ${docker_image}
+
+docker run -d \
+  --name portfolio \
+  --restart unless-stopped \
+  -p ${app_port}:3000 \
+  ${docker_image}
+# --restart unless-stopped brings the container back automatically if the
+# instance reboots, but respects a deliberate `docker stop`.
+
+echo "=== [4/4] verifying ==="
+# Give Next.js a moment to start listening before checking.
+for i in $(seq 1 15); do
+  if curl -fsS -o /dev/null "http://localhost:${app_port}"; then
+    echo "application responded OK after $((i * 2))s"
+    break
+  fi
+  sleep 2
+done
+
+docker ps
+echo "=== bootstrap complete ==="

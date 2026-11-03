@@ -1,0 +1,52 @@
+---
+###############################################################################
+# playbook.yml — configures a server to run the portfolio container
+#
+# WHAT ANSIBLE IS
+#   Terraform CREATES the machine. Ansible CONFIGURES what runs on it. The two
+#   are complementary: provisioning vs configuration management.
+#
+# WHY NOT JUST A SHELL SCRIPT
+#   Ansible tasks are *idempotent* — running the playbook five times leaves the
+#   system in the same state as running it once. A shell script that does
+#   `docker run` twice errors on the second run; the equivalent Ansible task
+#   sees the container already exists and reports "ok" instead of "changed".
+#   That is what makes it safe to re-run after a failure.
+#
+# RUN IT
+#   Offline, against your own machine:
+#     ansible-playbook playbook.yml --limit local
+#   Against the EC2 instance:
+#     ansible-playbook playbook.yml --limit webservers
+###############################################################################
+
+- name: Deploy the portfolio container
+  hosts: all
+
+  # Run tasks with sudo. The EC2 user `ubuntu` has passwordless sudo.
+  become: true
+
+  # Collect facts about the target (OS, IP, memory). Tasks below branch on
+  # ansible_facts, and the summary at the end prints the host's address.
+  gather_facts: true
+
+  vars:
+    docker_image: "jechuimmanuel/portfolio:v2"
+    container_name: "portfolio"
+    app_port: 3000
+
+  roles:
+    - docker_app
+
+  ###########################################################################
+  # post_tasks run after the roles. Used here purely to print a summary the
+  # examiner can read off the screen.
+  ###########################################################################
+  post_tasks:
+    - name: Show how to reach the application
+      ansible.builtin.debug:
+        msg:
+          - "Host        : {{ inventory_hostname }}"
+          - "OS          : {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+          - "Image       : {{ docker_image }}"
+          - "Open in a browser: http://{{ ansible_host | default('localhost') }}:{{ app_port }}"

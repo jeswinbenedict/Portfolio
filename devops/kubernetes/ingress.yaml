@@ -1,0 +1,63 @@
+###############################################################################
+# ingress.yaml — routes a HOSTNAME to the Service
+#
+# WHY, WHEN NodePort ALREADY WORKS
+#   NodePort gives you http://<node-ip>:30080 — an IP and an awkward port.
+#   An Ingress is an HTTP router for the cluster: it terminates normal port 80
+#   / 443 traffic and dispatches by hostname and path. That is how you serve
+#   portfolio.local (or a real purchased domain) instead of an IP:port pair,
+#   and it is where TLS certificates are attached.
+#
+# PREREQUISITE
+#   An Ingress object is only a set of rules; something must enforce them.
+#   Enable the NGINX ingress controller first:
+#
+#       minikube addons enable ingress
+#
+# REACHING IT OFFLINE
+#   Point the hostname at the Minikube node by adding a line to the Windows
+#   hosts file (C:\Windows\System32\drivers\etc\hosts, edit as Administrator):
+#
+#       <minikube ip>   portfolio.local
+#
+#   Get the address with:  minikube ip
+#   This is pure local name resolution — no DNS server and no internet.
+###############################################################################
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: portfolio-ingress
+  annotations:
+    # Rewrite the matched path to / before passing it upstream.
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # Send through as plain HTTP; we are not terminating TLS in the cluster.
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+spec:
+  # Which controller should act on this object. Required on modern clusters.
+  ingressClassName: nginx
+
+  rules:
+    - host: portfolio.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: portfolio-service
+                port:
+                  number: 80 # the SERVICE port, not the container port
+
+  ###########################################################################
+  # TLS — uncomment once you own a real domain and have created a secret:
+  #
+  #   kubectl create secret tls portfolio-tls \
+  #     --cert=fullchain.pem --key=privkey.pem
+  #
+  # tls:
+  #   - hosts:
+  #       - yourdomain.com
+  #     secretName: portfolio-tls
+  ###########################################################################

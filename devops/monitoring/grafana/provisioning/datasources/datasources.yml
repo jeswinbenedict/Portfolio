@@ -1,0 +1,36 @@
+###############################################################################
+# datasources.yml — pre-wires Grafana to Prometheus and Loki
+#
+# "Provisioning" means defining configuration as files that Grafana reads at
+# startup, instead of clicking through the UI. Two reasons this matters:
+#   1. The demo is repeatable — a fresh `docker compose up` is already set up.
+#   2. The configuration is in Git, so it is reviewable and versioned.
+###############################################################################
+
+apiVersion: 1
+
+datasources:
+  # --------------------------------------------------------------------------
+  # Prometheus — metrics (numbers over time)
+  # --------------------------------------------------------------------------
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    access: proxy # Grafana's backend queries it, not the browser.
+    # Docker DNS name + internal port, because Grafana reaches it over the
+    # compose network rather than via a published host port.
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: "15s" # match prometheus.yml scrape_interval
+
+  # --------------------------------------------------------------------------
+  # Loki — logs (text lines over time)
+  # --------------------------------------------------------------------------
+  - name: Loki
+    type: loki
+    uid: loki
+    access: proxy
+    url: http://loki:3100
+    editable: true

@@ -1,0 +1,20 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored, because in
+# a real project it often holds environment-specific or sensitive values.
+#
+#   cp terraform.tfvars.example terraform.tfvars
+
+project_name  = "portfolio"
+aws_region    = "eu-north-1"
+instance_type = "t3.micro"
+
+# Path to the PUBLIC half of your SSH key (the .pub file).
+# Create one first if you have not:
+#   ssh-keygen -t ed25519 -f ~/.ssh/portfolio -N ""
+public_key_path = "~/.ssh/portfolio.pub"
+
+docker_image = "jechuimmanuel/portfolio:v2"
+app_port     = 3000
+
+# Lock SSH to your own address instead of the whole internet by replacing this
+# with ["1.2.3.4/32"]. Find your current address with: curl ifconfig.me
+ssh_allowed_cidr = ["0.0.0.0/0"]

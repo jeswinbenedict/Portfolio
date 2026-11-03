@@ -1,0 +1,23 @@
+###############################################################################
+# dashboards.yml — tells Grafana where to find dashboard definitions on disk
+#
+# Grafana watches the folder below and loads any .json dashboard it finds, so
+# the stack starts with the portfolio dashboard already present.
+###############################################################################
+
+apiVersion: 1
+
+providers:
+  - name: "portfolio-dashboards"
+    orgId: 1
+    folder: "Portfolio"
+    type: file
+    # Let users edit in the UI; changes are lost on restart unless saved back
+    # to the file, which is the normal trade-off for provisioned dashboards.
+    disableDeletion: false
+    allowUiUpdates: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      # Reproduce the folder structure from disk inside Grafana.
+      foldersFromFilesStructure: false

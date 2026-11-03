@@ -1,0 +1,66 @@
+###############################################################################
+# prometheus.yml — what to scrape, and how often
+#
+# Prometheus works on a PULL model: it periodically fetches a plain-text
+# /metrics page from each target. Nothing has to push data to it, which is why
+# adding a new target is just another entry in this file.
+###############################################################################
+
+global:
+  # How often to collect. 15s is the usual default: frequent enough to see a
+  # spike, infrequent enough not to generate huge amounts of data.
+  scrape_interval: 15s
+
+  # How often to evaluate alerting/recording rules.
+  evaluation_interval: 15s
+
+  # Labels attached to every metric leaving this server. Useful once you have
+  # more than one Prometheus and need to tell their data apart.
+  external_labels:
+    monitor: "portfolio-lab"
+
+scrape_configs:
+  # --------------------------------------------------------------------------
+  # Prometheus scrapes itself. A good first check: if this target is DOWN,
+  # the server itself is unhealthy.
+  # --------------------------------------------------------------------------
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # --------------------------------------------------------------------------
+  # cAdvisor — per-container CPU, memory, network, disk.
+  #
+  # "cadvisor:8080" is a DOCKER DNS NAME, not a hostname on your laptop. It
+  # resolves because both containers sit on the `observability` network defined
+  # in docker-compose.yml.
+  # --------------------------------------------------------------------------
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  # --------------------------------------------------------------------------
+  # node-exporter — metrics about the host the containers run on.
+  # --------------------------------------------------------------------------
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  # --------------------------------------------------------------------------
+  # The portfolio itself.
+  #
+  # NOTE: a stock Next.js app does NOT expose a /metrics endpoint, so this
+  # target will show as DOWN in Prometheus. That is expected, and it is a
+  # useful thing to be able to explain: Prometheus is telling you the truth —
+  # it cannot scrape what does not exist.
+  #
+  # Container-level CPU/memory for the app still arrives via cAdvisor above,
+  # which is what the Grafana dashboard actually charts.
+  #
+  # To make this target go UP you would add a /metrics route to the app using
+  # a library such as `prom-client`.
+  # --------------------------------------------------------------------------
+  - job_name: "portfolio"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["portfolio:3000"]

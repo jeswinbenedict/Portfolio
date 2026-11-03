@@ -1,0 +1,164 @@
+---
+###############################################################################
+# roles/docker_app/tasks/main.yml
+#
+# A "role" is a reusable bundle of tasks. Splitting these out of the playbook
+# means the same logic can be applied to a different host or project by
+# listing the role again, rather than copy-pasting tasks.
+#
+# Every task below names a MODULE (apt, docker_container, ...). Modules are
+# declarative: you describe the desired end state and Ansible works out
+# whether any change is needed.
+###############################################################################
+
+# --------------------------------------------------------------------------
+# 1. Is Docker already present?
+#
+# `command` is not idempotent by nature, so changed_when: false tells Ansible
+# this task only *reads* state and never counts as a change. failed_when:
+# false stops a missing binary from aborting the play — we want to branch on
+# it, not fail.
+# --------------------------------------------------------------------------
+- name: Check whether Docker is already installed
+  ansible.builtin.command: docker --version
+  register: docker_check
+  changed_when: false
+  failed_when: false
+
+- name: Report Docker status
+  ansible.builtin.debug:
+    msg: >-
+      {{ 'Docker present: ' ~ docker_check.stdout
+         if docker_check.rc == 0
+         else 'Docker not found — it will be installed' }}
+
+# --------------------------------------------------------------------------
+# 2. Install Docker (skipped entirely if step 1 found it)
+#
+# This is the idempotency rule in action: on a second run the `when` is false
+# and all three tasks report "skipping".
+# --------------------------------------------------------------------------
+- name: Install prerequisite packages
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+    state: present
+    update_cache: true
+    cache_valid_time: 3600 # skip apt-get update if it ran in the last hour
+  when: docker_check.rc != 0
+
+- name: Download the Docker convenience installer
+  ansible.builtin.get_url:
+    url: https://get.docker.com
+    dest: /tmp/get-docker.sh
+    mode: "0755"
+  when: docker_check.rc != 0
+
+- name: Run the Docker installer
+  ansible.builtin.command: sh /tmp/get-docker.sh
+  when: docker_check.rc != 0
+  changed_when: true # if this runs at all, it changed the system
+
+# --------------------------------------------------------------------------
+# 3. Make sure the daemon is running and starts at boot
+#
+# `state: started` + `enabled: true` is declarative: Ansible starts it only if
+# it is not already running.
+# --------------------------------------------------------------------------
+- name: Ensure the Docker service is running and enabled
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Allow the login user to run docker without sudo
+  ansible.builtin.user:
+    name: "{{ ansible_user | default('ubuntu') }}"
+    groups: docker
+    append: true # append, don't replace their other groups
+  when: ansible_user is defined
+
+# --------------------------------------------------------------------------
+# 4. Python SDK — required by the community.docker modules below
+# --------------------------------------------------------------------------
+- name: Install the Docker SDK for Python
+  ansible.builtin.pip:
+    name: docker
+    state: present
+    break_system_packages: true # Ubuntu 24.04+ marks the system Python as externally managed
+  failed_when: false # fall back to shell-based tasks if pip is restricted
+
+# --------------------------------------------------------------------------
+# 5. Pull the image and run it
+#
+# community.docker.docker_container is fully idempotent: it compares the
+# running container's image, ports and restart policy against what is declared
+# here, and only recreates it if they differ.
+# --------------------------------------------------------------------------
+- name: Pull the application image from Docker Hub
+  community.docker.docker_image:
+    name: "{{ docker_image }}"
+    source: pull
+    force_source: true
+  register: pull_result
+  failed_when: false
+
+- name: Fall back to the docker CLI if the collection is unavailable
+  ansible.builtin.command: "docker pull {{ docker_image }}"
+  when: pull_result is failed or pull_result is skipped
+  changed_when: true
+
+- name: Run the portfolio container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ docker_image }}"
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "{{ app_port }}:3000"
+  register: run_result
+  failed_when: false
+
+- name: Fall back to the docker CLI to run the container
+  when: run_result is failed or run_result is skipped
+  block:
+    - name: Remove any previous container
+      ansible.builtin.command: "docker rm -f {{ container_name }}"
+      changed_when: false
+      failed_when: false
+
+    - name: Start the container
+      ansible.builtin.command: >-
+        docker run -d --name {{ container_name }}
+        --restart unless-stopped
+        -p {{ app_port }}:3000
+        {{ docker_image }}
+      changed_when: true
+
+# --------------------------------------------------------------------------
+# 6. Verify — never trust a deploy you have not tested
+#
+# retries/until handles the few seconds Next.js needs to start listening.
+# --------------------------------------------------------------------------
+- name: Wait for the application to answer on its port
+  ansible.builtin.uri:
+    url: "http://localhost:{{ app_port }}"
+    status_code: 200
+  register: health
+  retries: 15
+  delay: 2
+  until: health.status is defined and health.status == 200
+
+- name: Confirm the deployed version
+  ansible.builtin.uri:
+    url: "http://localhost:{{ app_port }}"
+    return_content: true
+  register: page
+
+- name: Assert the v2 build is the one serving
+  ansible.builtin.assert:
+    that:
+      - "'Dockerized' in page.content"
+    success_msg: "v2 confirmed — the version badge is present in the served HTML."
+    fail_msg: "The app responded, but the v2 badge is missing. Wrong image tag?"

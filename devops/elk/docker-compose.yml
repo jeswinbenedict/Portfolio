@@ -1,0 +1,160 @@
+###############################################################################
+# docker-compose.yml — the ELK stack (Elasticsearch, Logstash, Kibana)
+#
+# THE PIPELINE
+#   portfolio  writes logs to stdout, which Docker stores as JSON files
+#       |
+#   Filebeat   tails those files and ships each line onward
+#       |
+#   Logstash   parses, filters and enriches the lines (the "transform" stage)
+#       |
+#   Elasticsearch  indexes them so they are searchable
+#       |
+#   Kibana     the UI for searching and visualising
+#
+# ⚠ MEMORY WARNING
+#   Elasticsearch alone reserves ~1 GB heap here and the whole stack wants
+#   ~3 GB. On a 13.7 GB laptop you should NOT run this at the same time as
+#   Minikube or the Grafana stack. Shut the others down first:
+#
+#       cd ../monitoring && docker compose down
+#       minikube stop
+#
+#   For day-to-day work prefer ../monitoring (Loki), which does the same job
+#   in roughly a third of the memory. Run ELK when you specifically need to
+#   demonstrate ELK.
+#
+# RUN IT
+#   docker compose up -d
+#   Kibana          http://localhost:5601   (wait ~90s on first start)
+#   Elasticsearch   http://localhost:9200
+###############################################################################
+
+services:
+  # --------------------------------------------------------------------------
+  # Elasticsearch — the search and storage engine
+  # --------------------------------------------------------------------------
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: elasticsearch
+    restart: unless-stopped
+    environment:
+      # Single-node mode: skip the cluster-formation checks that a real
+      # multi-node deployment requires.
+      - discovery.type=single-node
+
+      # Disable TLS and authentication. Appropriate ONLY for a local lab —
+      # a production cluster must keep these on.
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+
+      # Pin the JVM heap. Without this, Elasticsearch sizes the heap from
+      # total host RAM and will try to take several GB.
+      # Rule of thumb: no more than 50% of the container's memory limit.
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+
+      # Disable swapping of the heap (improves stability).
+      - bootstrap.memory_lock=true
+
+    ulimits:
+      memlock: { soft: -1, hard: -1 } # required by memory_lock above
+
+    mem_limit: 2g
+
+    ports:
+      - "9200:9200" # REST API
+      - "9300:9300" # node-to-node transport
+
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+
+    healthcheck:
+      # Downstream services wait for this. "yellow" is correct for a
+      # single-node cluster: replica shards are unassigned because there is
+      # nowhere to put them. It is NOT an error.
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+    networks: [elk]
+
+  # --------------------------------------------------------------------------
+  # Logstash — parse and transform
+  # --------------------------------------------------------------------------
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.15.0
+    container_name: logstash
+    restart: unless-stopped
+    environment:
+      - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
+      - xpack.monitoring.enabled=false
+    mem_limit: 1g
+    ports:
+      - "5044:5044" # Beats input
+      - "9600:9600" # monitoring API
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks: [elk]
+
+  # --------------------------------------------------------------------------
+  # Kibana — the UI
+  # --------------------------------------------------------------------------
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.0
+    container_name: kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - xpack.security.enabled=false
+      # Required in 8.x even without security; any 32+ character string works.
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=portfolio_lab_encryption_key_32chars
+      - TELEMETRY_ENABLED=false
+    mem_limit: 1g
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks: [elk]
+
+  # --------------------------------------------------------------------------
+  # Filebeat — collects Docker container logs and sends them to Logstash
+  #
+  # Runs as root so it can read /var/lib/docker/containers.
+  # --------------------------------------------------------------------------
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.15.0
+    container_name: filebeat
+    restart: unless-stopped
+    user: root
+    command: ["--strict.perms=false"]
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - logstash
+    networks: [elk]
+
+  # --------------------------------------------------------------------------
+  # The application, so there are logs to collect.
+  # --------------------------------------------------------------------------
+  portfolio:
+    image: jechuimmanuel/portfolio:v2
+    container_name: portfolio
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks: [elk]
+
+volumes:
+  es-data:
+
+networks:
+  elk:
+    driver: bridge

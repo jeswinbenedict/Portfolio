@@ -1,0 +1,51 @@
+###############################################################################
+# service.yaml — a stable address in front of the Pods
+#
+# THE PROBLEM A SERVICE SOLVES
+#   Pods are disposable. Each gets its own cluster IP, and that IP changes
+#   every time the Pod is rescheduled, restarted or scaled. Nothing could rely
+#   on talking to a Pod directly.
+#
+#   A Service is a permanent virtual IP plus a DNS name. It watches for Pods
+#   matching its selector and load-balances across whichever ones are
+#   currently READY (see the readiness probe in deployment.yaml).
+#
+# SERVICE TYPES
+#   ClusterIP — reachable only inside the cluster (the default)
+#   NodePort  — also opens a port on the node itself, 30000-32767
+#   LoadBalancer — asks the cloud provider for a real external load balancer
+#
+# NodePort is used here because it is the simplest way to reach the app from
+# the host machine with Minikube, and it works completely offline.
+###############################################################################
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: portfolio-service
+  labels:
+    app: portfolio
+
+spec:
+  type: NodePort
+
+  # Any Pod carrying this label becomes a backend for this Service. This is
+  # the same label set in the Deployment's Pod template.
+  selector:
+    app: portfolio
+
+  ports:
+    - name: http
+      protocol: TCP
+
+      # port       — the Service's own port, used inside the cluster
+      #              (http://portfolio-service:80)
+      port: 80
+
+      # targetPort — the port on the Pod to forward to. Matches containerPort.
+      targetPort: 3000
+
+      # nodePort   — the port opened on the node, reachable from your laptop at
+      #              http://<minikube-ip>:30080
+      #              Must be in the 30000-32767 range.
+      nodePort: 30080

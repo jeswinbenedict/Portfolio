@@ -1,0 +1,25 @@
+# Terraform working files — never commit these.
+
+# Downloaded provider plugins. Large, platform-specific, and recreated by
+# `terraform init`.
+.terraform/
+.terraform.lock.hcl
+
+# STATE: Terraform's record of which real resources it created. It maps your
+# .tf files to actual AWS resource IDs. It can contain sensitive values in
+# plain text, and committing it causes conflicts when two people apply at once.
+# Real teams store it in a shared remote backend (S3 + DynamoDB) instead.
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+
+# Your real variable values (may differ per person / contain private paths).
+terraform.tfvars
+*.auto.tfvars
+
+# Saved plan files — these embed the full state, including secrets.
+*.tfplan
+
+# Crash logs
+crash.log
+crash.*.log

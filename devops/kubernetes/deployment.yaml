@@ -1,0 +1,108 @@
+###############################################################################
+# deployment.yaml — tells Kubernetes to keep N copies of the portfolio running
+#
+# WHY KUBERNETES WHEN DOCKER ALREADY WORKS
+#   `docker run` starts one container on one machine. If it crashes, it stays
+#   down unless a restart policy catches it; if the machine dies, the app dies.
+#   Kubernetes is a *control loop*: you declare "I want 2 healthy replicas" and
+#   it continuously works to make reality match. Kill a pod and it rebuilds it.
+#   That self-healing behaviour is the thing to demonstrate in the exam.
+#
+# THE OBJECT HIERARCHY
+#   Deployment  -> manages a ReplicaSet
+#     ReplicaSet -> keeps the right number of Pods
+#       Pod       -> wraps one or more containers (here, just one)
+###############################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio
+  labels:
+    app: portfolio
+
+spec:
+  # Desired number of healthy Pods. Kubernetes restores this number itself.
+  replicas: 2
+
+  # How the Deployment finds the Pods it owns. This MUST match the labels in
+  # the Pod template below, or the Deployment manages nothing.
+  selector:
+    matchLabels:
+      app: portfolio
+
+  # Replace Pods gradually on update so the site never goes fully offline.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0 # never drop below the desired replica count
+      maxSurge: 1 # allow one extra Pod while rolling
+
+  # The Pod template — the blueprint every replica is stamped from.
+  template:
+    metadata:
+      labels:
+        app: portfolio # must match spec.selector.matchLabels above
+    spec:
+      containers:
+        - name: portfolio
+          image: jechuimmanuel/portfolio:v2
+
+          # IfNotPresent uses the locally cached image when it exists, which is
+          # what makes OFFLINE operation possible after `minikube image load`.
+          # (The default, Always, would try to contact Docker Hub every time.)
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 3000 # the port INSIDE the container
+
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: HOSTNAME
+              value: "0.0.0.0" # bind all interfaces, same reason as in the Dockerfile
+            - name: PORT
+              value: "3000"
+
+          # ---------------------------------------------------------------
+          # Resource requests and limits
+          #   requests = what the scheduler reserves when placing the Pod
+          #   limits   = the hard ceiling; exceeding memory gets the container
+          #              OOM-killed, exceeding CPU just throttles it
+          # Keeping these small matters on a 13.7 GB laptop running Minikube.
+          # ---------------------------------------------------------------
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m" # 100 millicores = 0.1 of one core
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+          # ---------------------------------------------------------------
+          # Health probes — how Kubernetes knows a Pod is actually usable
+          #
+          #   readiness: "may this Pod receive traffic?" A failing readiness
+          #              probe removes the Pod from the Service's endpoints
+          #              but leaves it running.
+          #   liveness:  "is this Pod wedged?" A failing liveness probe makes
+          #              Kubernetes KILL and restart the container.
+          #
+          # Without these, Kubernetes only knows whether the process exists —
+          # it would happily send traffic to an app that is still booting.
+          # ---------------------------------------------------------------
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3

@@ -1,0 +1,50 @@
+###############################################################################
+# promtail-config.yml — ships container logs into Loki
+#
+# Promtail is the log equivalent of node-exporter: a small agent that watches
+# log files, attaches labels, and forwards lines to Loki.
+#
+# The important idea: Loki indexes only the LABELS (container name, stream),
+# never the log text itself. That is why it needs a fraction of the memory
+# Elasticsearch does — searching text is a scan at query time rather than a
+# giant inverted index maintained on write.
+###############################################################################
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0 # 0 disables the gRPC listener; not needed here
+
+# Where Promtail remembers how far it has read in each file, so a restart
+# does not re-send everything.
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  # Where to send the logs. "loki" is the Docker DNS name of the Loki service.
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # --------------------------------------------------------------------------
+  # Discover containers by talking to the Docker socket, rather than listing
+  # log files by hand. New containers are picked up automatically.
+  # --------------------------------------------------------------------------
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 10s
+
+    # relabel_configs rewrite the metadata Docker reports into the labels you
+    # actually want to query by in Grafana.
+    relabel_configs:
+      # Docker reports names with a leading slash ("/portfolio"); strip it.
+      - source_labels: ["__meta_docker_container_name"]
+        regex: "/(.*)"
+        target_label: "container"
+
+      # Keep the image name, useful for filtering by version tag.
+      - source_labels: ["__meta_docker_container_label_app"]
+        target_label: "app"
+
+      # stdout vs stderr.
+      - source_labels: ["__meta_docker_container_log_stream"]
+        target_label: "stream"

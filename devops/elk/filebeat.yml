@@ -1,0 +1,50 @@
+###############################################################################
+# filebeat.yml — the log shipper's configuration
+#
+# Filebeat is deliberately dumb: it tails files and forwards lines. All the
+# parsing happens downstream in Logstash. Keeping the agent light matters when
+# it runs on every machine you want logs from.
+###############################################################################
+
+filebeat.inputs:
+  # --------------------------------------------------------------------------
+  # Discover containers via the Docker API rather than hard-coding log paths,
+  # so new containers are picked up automatically.
+  # --------------------------------------------------------------------------
+  - type: container
+    enabled: true
+    paths:
+      - /var/lib/docker/containers/*/*.log
+
+# ----------------------------------------------------------------------------
+# Processors run inside Filebeat, before shipping. add_docker_metadata enriches
+# each line with the container name, image and labels — which is what makes
+# `container.name: portfolio` filtering possible in Kibana.
+# ----------------------------------------------------------------------------
+processors:
+  - add_docker_metadata:
+      host: "unix:///var/run/docker.sock"
+
+  # Docker log files are JSON; decode so the real text lands in `message`.
+  - decode_json_fields:
+      fields: ["message"]
+      target: ""
+      overwrite_keys: true
+      max_depth: 2
+
+  # Drop Filebeat's own logs, otherwise it ships its own output in a loop.
+  - drop_event:
+      when:
+        contains:
+          container.name: "filebeat"
+
+# ----------------------------------------------------------------------------
+# Send to Logstash (NOT straight to Elasticsearch) so the filter stage in
+# logstash.conf gets a chance to run.
+# ----------------------------------------------------------------------------
+output.logstash:
+  hosts: ["logstash:5044"]
+
+# Filebeat's own logging.
+logging.level: info
+logging.to_files: false
