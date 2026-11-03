@@ -1,0 +1,11 @@
+# Ansible runtime artefacts — regenerated on every run, never committed.
+
+# Cached system facts (fact_caching in ansible.cfg)
+.ansible_cache/
+
+# Retry files Ansible writes when a play fails partway
+*.retry
+
+# Vault password files — must never be committed
+.vault_pass
+vault_pass.txt
