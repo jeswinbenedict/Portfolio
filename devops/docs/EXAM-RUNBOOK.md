@@ -271,7 +271,80 @@ docker compose down
 
 ---
 
-## 8. Custom domain — explain, do not live-demo
+## 8. OAuth login — 3 minutes
+
+> Run with `npm run dev`, **not** `npm start`. `next start` does not work with
+> `output: "standalone"` — that setting exists for the Docker image.
+
+```powershell
+npm run dev
+```
+
+Browse to **http://localhost:3000/login** → **Sign in with GitHub** →
+Authorize → you land on `/dashboard` with your avatar, handle and session
+expiry. Then **Sign out**, and try `/dashboard` again — it bounces to login.
+
+**Say:** *"Without OAuth, 'sign in with GitHub' would mean asking for their
+GitHub password — a credential that works everywhere on GitHub. OAuth is
+delegated authorisation: the user authenticates on GitHub's own page, and my
+app receives a short-lived token for only the permission they approved. The
+password never touches my application."*
+
+### Walk the flow
+
+```
+ /login → /api/auth/github → github.com/authorize → callback
+        → verify state → swap code for token (server-side)
+        → read profile → mint our session → /dashboard
+```
+
+**The three security points to make:**
+
+| Mechanism | Attack it stops |
+|---|---|
+| `state` random value echoed back | CSRF / session fixation — someone handing you *their* code |
+| `httpOnly` cookie | XSS — page JavaScript cannot read the session |
+| GitHub's token discarded after use | Holding a live credential that can act on their GitHub |
+
+Also: `scope=read:user` is the narrowest scope that returns a profile. Request
+the least you need.
+
+### The demo that lands best
+
+Show the CSRF guard rejecting a forged callback:
+
+```powershell
+curl.exe -i "http://localhost:3000/api/auth/callback/github?code=fake&state=attacker"
+```
+
+```
+307 → /login?error=state_mismatch
+```
+
+**Say:** *"I supplied an attacker-controlled state with no matching cookie. It
+was rejected before any token exchange happened."*
+
+### Likely questions
+
+- **"Why two layers of protection?"** — `proxy.ts` does an optimistic cookie
+  check and redirects early; the dashboard page checks again. Proxy runs on
+  prefetched routes too, so it must stay cheap and must not be the only guard.
+  The authoritative check belongs next to the data.
+- **"Why not NextAuth?"** — Built by hand so every step of the exchange is
+  visible and explainable. A library would hide exactly what is being examined.
+- **"Where is the session stored?"** — A jose-signed JWT (HS256) in an
+  httpOnly, SameSite=lax cookie. Stateless: no database needed.
+
+### ⚠ Be ready for this one
+
+**OAuth cannot work on GitHub Pages.** Pages serves static files and cannot
+execute route handlers, so on `jeswinbenedict.github.io` the login page renders
+but the button leads nowhere. That is the inherent difference between static
+hosting and a server runtime — not a bug. Demo OAuth from local or Docker.
+
+---
+
+## 9. Custom domain — explain, do not live-demo
 
 You do not own a domain yet, so **explain the design** and show the config:
 
@@ -290,7 +363,7 @@ Full procedure: [`07-domain-and-https.md`](07-domain-and-https.md).
 
 ---
 
-## 9. If something breaks
+## 10. If something breaks
 
 | Symptom | Fix |
 |---|---|
@@ -304,7 +377,7 @@ Full procedure: [`07-domain-and-https.md`](07-domain-and-https.md).
 
 ---
 
-## 10. One-paragraph summary
+## 11. One-paragraph summary
 
 > *"I containerised my Next.js portfolio with a three-stage Docker build that
 > ships a 265 MB image containing only compiled output. I published it to Docker
@@ -315,4 +388,5 @@ Full procedure: [`07-domain-and-https.md`](07-domain-and-https.md).
 > self-healing. For observability, Prometheus scrapes container metrics and
 > Grafana visualises them, with Loki for logs, and I have a full ELK pipeline
 > for log parsing and search. nginx fronts it as a reverse proxy for a custom
-> domain with Let's Encrypt TLS."*
+> domain with Let's Encrypt TLS, and the site has GitHub OAuth login with the
+> session held as a signed JWT in an httpOnly cookie."*
