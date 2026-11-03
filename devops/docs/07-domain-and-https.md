@@ -133,6 +133,67 @@ systemctl list-timers | grep certbot
 
 ---
 
+## 4b. GoDaddy → Cloudflare, step by step
+
+This is the exact path for this project: buy at GoDaddy, then hand DNS to
+Cloudflare. You keep GoDaddy as the *registrar* (who owns the registration)
+but Cloudflare becomes the *nameserver* (who answers DNS queries).
+
+### Step 1 — Buy at GoDaddy
+
+1. Search your domain at godaddy.com
+2. **Decline every add-on at checkout** — Website Builder, Microsoft 365,
+   "Full Domain Privacy", and especially **SSL**. You get SSL free from
+   Let's Encrypt and privacy free from Cloudflare.
+3. Watch the renewal price, not the first-year price. GoDaddy's ₹99 offers
+   renew around ₹1,200.
+
+### Step 2 — Add the site to Cloudflare
+
+1. dash.cloudflare.com → **Add a domain**
+2. Enter the domain, choose the **Free** plan
+3. Cloudflare scans existing DNS and shows two nameservers, e.g.
+   `aria.ns.cloudflare.com` / `rex.ns.cloudflare.com` — **copy both**
+
+### Step 3 — Point GoDaddy at Cloudflare
+
+1. GoDaddy → **My Products** → your domain → **DNS** → **Nameservers**
+2. **Change** → **I'll use my own nameservers**
+3. Replace both entries with Cloudflare's, save
+4. Back in Cloudflare, click **Check nameservers now**
+
+Propagation is usually 5–30 minutes, occasionally up to 24 hours. Verify:
+
+```bash
+dig +short NS yourdomain.com      # should return the Cloudflare nameservers
+```
+
+### Step 4 — DNS records in Cloudflare
+
+Add these in Cloudflare's DNS tab (not GoDaddy's — GoDaddy's are now ignored):
+
+| Type | Name | Content | Proxy |
+|---|---|---|---|
+| `A` | `@` | your EC2 Elastic IP | Proxied 🟠 |
+| `CNAME` | `www` | `yourdomain.com` | Proxied 🟠 |
+
+### Step 5 — Order of operations for SSL
+
+This trips people up. Let's Encrypt's HTTP-01 challenge must reach **your
+server**, but Cloudflare's proxy hides it. So:
+
+1. Set both records to **DNS only** (grey cloud) first
+2. Run `sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com`
+3. Once the certificate is installed, switch both back to **Proxied** (orange)
+4. Set SSL/TLS mode to **Full (strict)**
+
+Doing it in the other order gives `Timeout during connect` from certbot.
+
+> **One common mistake:** after moving nameservers to Cloudflare, editing DNS
+> in the GoDaddy panel does nothing. All DNS changes now happen in Cloudflare.
+
+---
+
 ## 5. Cloudflare
 
 Cloudflare sits between visitors and your server as a reverse proxy, giving
