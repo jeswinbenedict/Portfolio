@@ -231,6 +231,7 @@ minikube stop
 | `docs/04-kubernetes.md` | Pods, Deployments, Services, self-healing |
 | `docs/05-monitoring.md` | Prometheus pull model, PromQL, Grafana |
 | `docs/06-elk.md` | The log pipeline, Logstash filters |
-| `docs/07-domain-and-https.md` | Buying a domain, DNS, nginx, Let's Encrypt, Cloudflare |
+| `docs/07-domain-and-https.md` | Buying a domain (GoDaddy → Cloudflare), DNS, nginx, Let's Encrypt |
 | `docs/08-offline.md` | Running every piece with no internet |
+| `docs/09-oauth.md` | GitHub OAuth login, sessions, the Next.js 16 `proxy.ts` rename |
 | `docs/EXAM-RUNBOOK.md` | **The demo script — read this before the exam** |
