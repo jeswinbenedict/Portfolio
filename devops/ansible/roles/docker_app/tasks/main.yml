@@ -117,6 +117,10 @@
     restart_policy: unless-stopped
     published_ports:
       - "{{ app_port }}:3000"
+    # OAuth secrets are injected at RUNTIME from a file on the target host,
+    # never baked into the image. Omitted when app_env_file is not set, so the
+    # site still runs (login just reports "not configured").
+    env_file: "{{ app_env_file | default(omit) }}"
   register: run_result
   failed_when: false
 
@@ -133,6 +137,7 @@
         docker run -d --name {{ container_name }}
         --restart unless-stopped
         -p {{ app_port }}:3000
+        {{ ("--env-file " ~ app_env_file) if app_env_file is defined else "" }}
         {{ docker_image }}
       changed_when: true
 
@@ -150,15 +155,18 @@
   delay: 2
   until: health.status is defined and health.status == 200
 
+# /login only exists from v3 onward (the OAuth release), so it identifies the
+# build unambiguously. A deploy that silently shipped an older tag fails here.
 - name: Confirm the deployed version
   ansible.builtin.uri:
-    url: "http://localhost:{{ app_port }}"
+    url: "http://localhost:{{ app_port }}/login"
     return_content: true
+    status_code: 200
   register: page
 
-- name: Assert the v2 build is the one serving
+- name: Assert the v3 (OAuth) build is the one serving
   ansible.builtin.assert:
     that:
-      - "'Dockerized' in page.content"
-    success_msg: "v2 confirmed — the version badge is present in the served HTML."
-    fail_msg: "The app responded, but the v2 badge is missing. Wrong image tag?"
+      - "'Sign in' in page.content"
+    success_msg: "v3 confirmed — the OAuth login page is being served."
+    fail_msg: "The app responded, but /login is missing. Wrong image tag (pre-v3)?"

@@ -28,7 +28,7 @@ Expected: `v1`, `v2` and `latest`, each 265 MB.
 If you have internet, pre-pull so nothing downloads mid-demo:
 
 ```powershell
-docker pull jechuimmanuel/portfolio:v2
+docker pull jechuimmanuel/portfolio:v3
 ```
 
 ---
@@ -40,17 +40,23 @@ tree and a build step. I packaged all three into an image so it runs anywhere."*
 
 ```powershell
 docker images jechuimmanuel/portfolio
-docker run -d --name portfolio -p 3000:3000 jechuimmanuel/portfolio:v2
+docker run -d --name portfolio -p 3000:3000 --env-file .env.local jechuimmanuel/portfolio:v3
 docker ps
 ```
 
-Open **http://localhost:3000** — point out the `v2 · Dockerized` badge.
+Open **http://localhost:3000**, then **/login** — the OAuth page is what
+identifies the v3 build.
+
+**Say about `--env-file`:** *"The OAuth secrets are injected at runtime, not
+baked into the image. Anyone who pulls my public image gets no credentials —
+run it without `--env-file` and the login page just reports it is not
+configured."*
 
 **Prove it is independent of the host:**
 
 ```powershell
 node -v
-docker run --rm jechuimmanuel/portfolio:v2 node -v
+docker run --rm jechuimmanuel/portfolio:v3 node -v
 ```
 
 **Say:** *"The host runs Node 25 on Windows. The container runs its own Node 20
@@ -75,7 +81,7 @@ Three stages — **deps**, **builder**, **runner**. Only the third ships.
 ## 2. Docker Hub — 1 minute
 
 ```powershell
-docker push jechuimmanuel/portfolio:v2
+docker push jechuimmanuel/portfolio:v3
 ```
 
 (Already pushed — show the repo page instead: `hub.docker.com/r/jechuimmanuel/portfolio`)
@@ -273,12 +279,14 @@ docker compose down
 
 ## 8. OAuth login — 3 minutes
 
-> Run with `npm run dev`, **not** `npm start`. `next start` does not work with
-> `output: "standalone"` — that setting exists for the Docker image.
+Best shown **from the container**, since that is the deployed artifact:
 
 ```powershell
-npm run dev
+docker run -d --name portfolio -p 3000:3000 --env-file .env.local jechuimmanuel/portfolio:v3
 ```
+
+Or locally with `npm run dev` — **not** `npm start`, which does not work with
+`output: "standalone"`.
 
 Browse to **http://localhost:3000/login** → **Sign in with GitHub** →
 Authorize → you land on `/dashboard` with your avatar, handle and session

@@ -214,7 +214,39 @@ OAuth from Docker, EC2 or local; demo GitHub Pages for the static build.
 
 ---
 
-## 10. Changing environments
+## 10. Running OAuth in a container
+
+The image never contains secrets. They are injected when the container starts:
+
+| Platform | How secrets get in |
+|---|---|
+| Docker | `docker run --env-file .env.local ...` |
+| Compose stacks | `env_file` entry (optional — stack still starts without it) |
+| Kubernetes | `kubectl create secret generic portfolio-oauth --from-env-file=.env.local`, read via `envFrom` |
+| Ansible / EC2 | copy an env file to the host, run with `-e app_env_file=<path>` |
+
+Proof the published image is clean — run it with no env file and count:
+
+```bash
+docker run --rm jechuimmanuel/portfolio:v3 sh -c "env | grep -c -E 'GITHUB|SESSION'"
+# 0
+```
+
+### A bug containers exposed that the dev server hid
+
+The first v3 build redirected to `http://0.0.0.0:3000/login`. Inside the
+container the server binds `HOSTNAME=0.0.0.0`, so `req.nextUrl.origin` reported
+the *bind address* rather than the address the browser used. Under
+`npm run dev` it was `localhost` and looked fine.
+
+**Fix:** redirects build from the configured `APP_BASE_URL`, never from the
+request origin. The request origin describes how the server is listening, not
+how the user reached it — behind Docker, a proxy or a load balancer, those
+differ. Worth remembering for any app that runs behind something else.
+
+---
+
+## 11. Changing environments
 
 Each environment needs its **own** registered callback URL. Either add several
 to one OAuth App, or register one App per environment:

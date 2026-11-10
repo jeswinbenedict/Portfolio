@@ -19,7 +19,7 @@ and **how** to run it. Component details live in each subfolder.
                                    │ docker push
                                    ▼
                         ┌────────────────────┐
-                        │    DOCKER HUB      │  jechuimmanuel/portfolio:v2
+                        │    DOCKER HUB      │  jechuimmanuel/portfolio:v3
                         └─────────┬──────────┘
                      docker pull  │
             ┌──────────────────────┼──────────────────────┐
@@ -102,7 +102,7 @@ AWS CLI 2.39.3, Minikube v1.39.0, Docker Engine 29.7.2.
 **The app alone**
 
 ```bash
-docker run -d --name portfolio -p 3000:3000 jechuimmanuel/portfolio:v2
+docker run -d --name portfolio -p 3000:3000 jechuimmanuel/portfolio:v3
 ```
 
 **Monitoring stack** (Grafana `localhost:3001`, admin/admin)

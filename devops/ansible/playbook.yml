@@ -31,7 +31,12 @@
   gather_facts: true
 
   vars:
-    docker_image: "jechuimmanuel/portfolio:v2"
+    docker_image: "jechuimmanuel/portfolio:v3"
+    # Optional: path ON THE TARGET HOST to an env file holding the OAuth
+    # secrets. Copy it there first, e.g.:
+    #   scp .env.production ubuntu@<ip>:/home/ubuntu/portfolio.env
+    # then run with:  -e app_env_file=/home/ubuntu/portfolio.env
+    # Left unset, the site runs and /login reports "not configured".
     container_name: "portfolio"
     app_port: 3000
 

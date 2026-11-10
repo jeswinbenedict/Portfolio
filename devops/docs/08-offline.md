@@ -21,7 +21,7 @@ Run this **the day before**. It is the single most useful thing in this doc.
 
 ```powershell
 # 1. Application image
-docker pull jechuimmanuel/portfolio:v2
+docker pull jechuimmanuel/portfolio:v3
 
 # 2. Monitoring stack images
 cd devops\monitoring
@@ -33,7 +33,7 @@ docker compose pull
 
 # 4. Kubernetes cluster (downloads ~1 GB once, then cached forever)
 minikube start --driver=docker --memory=3000 --cpus=2
-minikube image load jechuimmanuel/portfolio:v2   # push the app INTO the cluster
+minikube image load jechuimmanuel/portfolio:v3   # push the app INTO the cluster
 minikube stop
 
 # 5. Terraform providers
@@ -81,13 +81,13 @@ containerisation, configuration management, orchestration and observability.
 
 ```powershell
 # --- Docker ---
-docker run -d --name portfolio -p 3000:3000 jechuimmanuel/portfolio:v2
+docker run -d --name portfolio -p 3000:3000 jechuimmanuel/portfolio:v3
 docker ps
 # browse http://localhost:3000
 
 # host independence
 node -v
-docker run --rm jechuimmanuel/portfolio:v2 node -v
+docker run --rm jechuimmanuel/portfolio:v3 node -v
 ```
 
 ```bash
@@ -155,7 +155,7 @@ in `docker images` is **not** automatically visible to the cluster. You must
 load it in:
 
 ```powershell
-minikube image load jechuimmanuel/portfolio:v2
+minikube image load jechuimmanuel/portfolio:v3
 minikube image ls | findstr portfolio
 ```
 

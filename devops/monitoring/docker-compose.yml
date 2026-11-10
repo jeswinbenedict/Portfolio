@@ -30,7 +30,12 @@ services:
   # The application under observation
   # --------------------------------------------------------------------------
   portfolio:
-    image: jechuimmanuel/portfolio:v2
+    image: jechuimmanuel/portfolio:v3
+    # OAuth secrets injected at runtime from the project env file. required:
+    # false keeps the stack startable without it (login shows "not configured").
+    env_file:
+      - path: ../../.env.local
+        required: false
     container_name: portfolio
     restart: unless-stopped
     ports:

@@ -45,7 +45,7 @@ spec:
     spec:
       containers:
         - name: portfolio
-          image: jechuimmanuel/portfolio:v2
+          image: jechuimmanuel/portfolio:v3
 
           # IfNotPresent uses the locally cached image when it exists, which is
           # what makes OFFLINE operation possible after `minikube image load`.
@@ -63,6 +63,21 @@ spec:
               value: "0.0.0.0" # bind all interfaces, same reason as in the Dockerfile
             - name: PORT
               value: "3000"
+
+          # OAuth secrets come from a Kubernetes Secret, never from this file
+          # (it is committed to Git) and never from the image. Create it from
+          # your local env file:
+          #
+          #   kubectl create secret generic portfolio-oauth           #     --from-env-file=.env.local
+          #
+          # optional: true lets the Pods start without it — the site works and
+          # /login reports "not configured". Pods read env at START, so after
+          # creating or changing the Secret run:
+          #   kubectl rollout restart deployment/portfolio
+          envFrom:
+            - secretRef:
+                name: portfolio-oauth
+                optional: true
 
           # ---------------------------------------------------------------
           # Resource requests and limits

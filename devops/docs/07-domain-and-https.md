@@ -93,7 +93,7 @@ Without these the app sees every request as coming from `127.0.0.1` over
 Also bind the container to loopback only, so nobody can bypass nginx:
 
 ```bash
-docker run -d --name portfolio -p 127.0.0.1:3000:3000 jechuimmanuel/portfolio:v2
+docker run -d --name portfolio -p 127.0.0.1:3000:3000 jechuimmanuel/portfolio:v3
 ```
 
 ---

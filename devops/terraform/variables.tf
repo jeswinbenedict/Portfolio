@@ -44,7 +44,7 @@ variable "public_key_path" {
 variable "docker_image" {
   description = "The image the instance pulls and runs on first boot."
   type        = string
-  default     = "jechuimmanuel/portfolio:v2"
+  default     = "jechuimmanuel/portfolio:v3"
 }
 
 variable "app_port" {

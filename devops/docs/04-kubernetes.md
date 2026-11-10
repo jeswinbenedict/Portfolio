@@ -58,7 +58,7 @@ spec:
     spec:
       containers:
         - name: portfolio
-          image: jechuimmanuel/portfolio:v2
+          image: jechuimmanuel/portfolio:v3
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -143,7 +143,7 @@ ENDPOINTS
 10.244.0.5:3000,10.244.0.6:3000      ← both Pods registered
 
 $ kubectl port-forward service/portfolio-service 8088:80
-$ curl http://localhost:8088          → 200, "v2 · Dockerized"
+$ curl http://localhost:8088          → 200   (measured on v2; v3 adds /login)
 ```
 
 Two endpoints means the Service is genuinely load-balancing across both Pods,
@@ -186,7 +186,7 @@ Minikube has its **own** container runtime. An image in `docker images` is not
 visible to the cluster:
 
 ```bash
-minikube image load jechuimmanuel/portfolio:v2
+minikube image load jechuimmanuel/portfolio:v3
 minikube image ls | findstr portfolio
 ```
 
@@ -204,6 +204,28 @@ kubectl port-forward service/portfolio-service 8088:80
 
 `port-forward` is more predictable for a demo — it does not block the terminal
 the same way.
+
+### OAuth login through the cluster
+
+The Pods read OAuth secrets from the `portfolio-oauth` Secret:
+
+```bash
+kubectl create secret generic portfolio-oauth --from-env-file=.env.local
+kubectl rollout restart deployment/portfolio   # Pods read env only at start
+```
+
+For a **browser** sign-in, forward on port **3000**, not 8088:
+
+```bash
+kubectl port-forward service/portfolio-service 3000:80
+```
+
+`APP_BASE_URL` and the redirect URI registered on GitHub are both
+`localhost:3000`. Forward on any other port and GitHub sends the user back to
+a port nothing is listening on. Stop anything else using 3000 first.
+
+Verified: both v3 Pods see all four variables, and `/api/auth/github` returns
+`307` through the Service.
 
 ---
 
