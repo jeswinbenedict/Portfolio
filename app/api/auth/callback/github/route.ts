@@ -8,13 +8,14 @@ import { cookies } from "next/headers";
 import {
   exchangeCodeForToken,
   fetchGitHubUser,
+  getGitHubConfig,
   OAUTH_STATE_COOKIE,
 } from "@/lib/auth/github";
 import { createSession } from "@/lib/auth/session";
 
 /** Send the user back to /login with a readable reason in the query string. */
-function fail(req: NextRequest, reason: string) {
-  const url = new URL("/login", req.nextUrl.origin);
+function fail(reason: string) {
+  const url = new URL("/login", getGitHubConfig().baseUrl);
   url.searchParams.set("error", reason);
   return NextResponse.redirect(url);
 }
@@ -25,11 +26,11 @@ export async function GET(req: NextRequest) {
 
   // The user pressed "Cancel" on GitHub's consent screen.
   if (req.nextUrl.searchParams.get("error")) {
-    return fail(req, "access_denied");
+    return fail("access_denied");
   }
 
   if (!code || !state) {
-    return fail(req, "missing_code");
+    return fail("missing_code");
   }
 
   // ── Step 5: CSRF check ────────────────────────────────────
@@ -39,7 +40,7 @@ export async function GET(req: NextRequest) {
   const expectedState = cookieStore.get(OAUTH_STATE_COOKIE)?.value;
 
   if (!expectedState || expectedState !== state) {
-    return fail(req, "state_mismatch");
+    return fail("state_mismatch");
   }
 
   // One-time value: burn it immediately so it cannot be replayed.
@@ -48,13 +49,13 @@ export async function GET(req: NextRequest) {
   // ── Step 6: code → access token (server-side only) ────────
   const accessToken = await exchangeCodeForToken(code);
   if (!accessToken) {
-    return fail(req, "token_exchange_failed");
+    return fail("token_exchange_failed");
   }
 
   // ── Step 7: read the profile ──────────────────────────────
   const user = await fetchGitHubUser(accessToken);
   if (!user) {
-    return fail(req, "profile_fetch_failed");
+    return fail("profile_fetch_failed");
   }
 
   // ── Step 8: mint OUR session ──────────────────────────────
@@ -68,5 +69,5 @@ export async function GET(req: NextRequest) {
     avatarUrl: user.avatar_url,
   });
 
-  return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin));
+  return NextResponse.redirect(new URL("/dashboard", getGitHubConfig().baseUrl));
 }
