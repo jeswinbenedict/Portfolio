@@ -53,14 +53,38 @@ services:
   # the cgroup and Docker state that describe running containers.
   # --------------------------------------------------------------------------
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    image: gcr.io/cadvisor/cadvisor:v0.52.1
     container_name: cadvisor
     restart: unless-stopped
+    # Required on cgroup v2 hosts (Docker Desktop / WSL 2). By default a
+    # container gets a PRIVATE cgroup namespace, so cAdvisor sees only its own
+    # cgroup and reports no per-container metrics at all — the dashboard's CPU
+    # and memory panels come up empty. Sharing the host's cgroup namespace and
+    # running privileged lets it see every container's cgroup.
+    cgroup: host
+    privileged: true
+    devices:
+      - /dev/kmsg
+    # Read containers through CONTAINERD, not Docker's layer database.
+    #
+    # Docker Desktop stores images with the containerd snapshotter. cAdvisor's
+    # Docker integration looks for layers in the classic /var/lib/docker layout,
+    # cannot find them, and rejects every container with "failed to identify the
+    # read-write layer ID" (still true in v0.52.1). Pointing --docker at a socket
+    # that does not exist disables that integration, and --containerd-namespace
+    # =moby reads the namespace Docker Desktop keeps its containers in.
+    #
+    # Trade-off: series are named by container ID, so dashboards group by the
+    # `image` label instead (e.g. jechuimmanuel/portfolio:v3).
+    command:
+      - "--docker=unix:///no-docker.sock"
+      - "--containerd=/run/containerd/containerd.sock"
+      - "--containerd-namespace=moby"
     ports:
       - "8080:8080"
     volumes:
       - /:/rootfs:ro
-      - /var/run:/var/run:ro
+      - /run/containerd:/run/containerd:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     networks:
