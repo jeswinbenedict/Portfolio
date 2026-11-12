@@ -7,6 +7,29 @@ Everything here has been run on this machine and works.
 
 ## 0. Pre-flight — do this 20 minutes before
 
+**Memory first.** The full demo (ELK + Grafana) uses ~4 GB inside Docker.
+Close Opera and Brave, and stop other Docker projects — your **LuzHire**
+Supabase stack auto-starts and takes ~1.8 GB:
+
+```powershell
+docker stop $(docker ps --filter name=_LuzHire -q)
+```
+
+Restart it afterwards with `supabase start` in the LuzHire folder.
+
+**Run ELK and Grafana together** (verified working): start ELK first, then the
+monitoring stack *without* its own app container, so the two do not fight over
+the `portfolio` name and port 3000:
+
+```powershell
+cd devops\elk;        docker compose up -d
+cd ..\monitoring;     docker compose up -d --no-deps cadvisor node-exporter prometheus loki promtail grafana
+```
+
+The Grafana dashboard matches containers by image, so it monitors the ELK
+stack's copy of the app. Minikube (~3 GB) will not fit alongside both — run it
+on its own.
+
 Docker Desktop is the single most likely thing to fail. Start it **early**.
 
 ```powershell
@@ -352,7 +375,27 @@ hosting and a server runtime — not a bug. Demo OAuth from local or Docker.
 
 ---
 
-## 9. Custom domain — explain, do not live-demo
+## 9. Cloudflare — live, zero cost
+
+```powershell
+C:\Users\jeswi\bin\cloudflared.exe tunnel --no-autoupdate --url http://localhost:3000
+```
+
+Open the printed `https://….trycloudflare.com` URL. A **phone on mobile data**
+is the most convincing proof, since that is clearly not your laptop's network.
+
+**Say:** *"cloudflared makes an outbound connection to Cloudflare. Visitors hit
+Cloudflare's edge, which relays traffic back down that tunnel. No inbound port
+is open, my IP is never exposed, and TLS is handled at the edge, so it is HTTPS
+with no certificate setup."*
+
+**Be upfront:** `trycloudflare.com` is Cloudflare's domain. A custom name needs
+a purchased domain; the full procedure is in `07-domain-and-https.md` §4b.
+Ctrl+C closes the tunnel — it is public while it runs.
+
+---
+
+## 9b. Custom domain — explain, do not live-demo
 
 You do not own a domain yet, so **explain the design** and show the config:
 

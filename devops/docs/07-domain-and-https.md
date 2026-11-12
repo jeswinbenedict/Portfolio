@@ -133,6 +133,68 @@ systemctl list-timers | grep certbot
 
 ---
 
+## 4a. Zero-cost option — Cloudflare Tunnel
+
+**What is used in this project, because it costs nothing.** No domain
+purchase, no Cloudflare account, no open firewall ports.
+
+```powershell
+C:\Users\jeswi\bin\cloudflared.exe tunnel --no-autoupdate --url http://localhost:3000
+```
+
+It prints a URL like `https://random-words.trycloudflare.com`. That address is
+public, served over HTTPS by Cloudflare's network, and forwards to the
+container on your laptop. Ctrl+C closes it.
+
+### How it works
+
+```
+browser ──HTTPS──► Cloudflare edge ◄──outbound tunnel── cloudflared ──► localhost:3000
+```
+
+`cloudflared` makes an **outbound** connection to Cloudflare. Visitors connect
+to Cloudflare, which relays traffic back down that connection. Because the
+laptop only dials *out*:
+
+- no inbound port is opened and no router/firewall change is needed
+- the laptop's real IP address is never exposed
+- TLS is terminated at Cloudflare's edge, so HTTPS works with no certificate setup
+
+That is the same mechanism a paid **named tunnel** uses; the difference is
+only the hostname.
+
+### Free quick tunnel vs a real custom domain
+
+| | Quick tunnel (used here) | Named tunnel + own domain |
+|---|---|---|
+| Cost | **₹0** | domain ~₹700–900/yr |
+| Hostname | random `*.trycloudflare.com`, new each run | `yourdomain.com`, permanent |
+| Cloudflare account | not needed | needed |
+| HTTPS | yes, automatic | yes, automatic |
+| Fit for | demos, testing | production |
+
+**Be honest about this in the viva:** a quick tunnel proves the Cloudflare
+integration — edge proxying, TLS, no open ports — but `trycloudflare.com` is
+Cloudflare's domain, not a custom one. A truly custom name requires owning a
+domain, and that always costs money. Free subdomain services cannot be added
+to Cloudflare, because Cloudflare needs control of the domain's nameservers.
+
+### ⚠ OAuth over the tunnel
+
+GitHub sign-in will not work through the random URL: `APP_BASE_URL` and the
+registered redirect URI are both `localhost:3000`. To demo login over the
+tunnel, add `https://<tunnel-host>/api/auth/callback/github` as a redirect URI
+on the GitHub OAuth app, set `APP_BASE_URL` to the tunnel URL, and restart the
+container. The URL changes every run, which is why demoing login locally is
+simpler.
+
+### ⚠ It is public
+
+Anyone with the URL can reach the site while the tunnel runs. Close it with
+Ctrl+C when the demo is over.
+
+---
+
 ## 4b. GoDaddy → Cloudflare, step by step
 
 This is the exact path for this project: buy at GoDaddy, then hand DNS to
